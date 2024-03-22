@@ -1,5 +1,6 @@
 // Login.js
 import React from 'react'
+import {Link} from 'react-router-dom'
 import InputField from './Components/InputField'
 
 function Login() {
@@ -13,7 +14,7 @@ function Login() {
       
       <h4>Continue with google</h4>
       
-      <p>Click here to <span>Register</span></p>
+      <p>Click here to <Link to='/signUp'>Register</Link></p>
       <button className="signUp-BTN">Login</button>
     </div>
   )

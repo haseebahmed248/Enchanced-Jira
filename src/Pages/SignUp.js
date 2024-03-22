@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from 'react-router-dom';
 import InputField from './Components/InputField'
 
 function SignUp() {
@@ -13,7 +14,7 @@ function SignUp() {
       
       <h4>Continue with google</h4>
       
-      <p>Click here to <span>Login</span></p>
+      <p>Click here to <Link to='/'>Login</Link></p>
       <button className="signUp-BTN">Sign-Up</button>
     </div>
   )
