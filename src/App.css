@@ -24,6 +24,7 @@
   width: 27%;
   height: 50vh;
   border-radius: 6px;
+  box-shadow: 2px 1px 3px gray;
 }
 
 Input {
@@ -32,15 +33,17 @@ Input {
   margin: 3%;
   width: 60%;
   border-radius: 6px; 
+  border: 1px solid gray;
 }
 
 .signUp-BTN {
-  width: 50%;
+  width: 40%;
   height: 4vh;
   background-color: transparent;
   border: 1px solid rgb(252, 29, 29);
   border-radius: 6px;
   cursor: pointer;
+  font-size: 16px;
 }
 
 .container p span {

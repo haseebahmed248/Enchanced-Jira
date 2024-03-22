@@ -1,22 +1,20 @@
-// Login.js
+// AdminLogin.js
 import React from 'react'
 import InputField from './Components/InputField'
 
-function Login() {
+function AdminLogin() {
   return (
     <div className='container'>
-    <h1>Login</h1>
+    <h1>Admin Login</h1>
       <InputField type="text" placeholder="Enter your username" />
       
       
       <InputField type="password" placeholder="Enter your password" />
       
-      <h4>Continue with google</h4>
-      
-      <p>Click here to <span>Register</span></p>
+      <p>Click here to <span>User-Login</span></p>
       <button className="signUp-BTN">Login</button>
     </div>
   )
 }
 
-export default Login
+export default AdminLogin
