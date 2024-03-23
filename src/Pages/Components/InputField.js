@@ -1,10 +1,15 @@
-// InputField.js
-import React from 'react'
+import React from 'react';
 
-function InputField({ placeholder, type }) {
+function InputField({ placeholder, type, value, onChange }) {
   return (
-    <><input type={type} placeholder={placeholder} required/></>
-  )
+    <input
+      type={type}
+      placeholder={placeholder}
+      value={value}
+      onChange={onChange}
+      required
+    />
+  );
 }
 
-export default InputField
+export default InputField;
