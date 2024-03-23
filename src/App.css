@@ -48,6 +48,7 @@ Input {
   border-radius: 6px;
   cursor: pointer;
   font-size: 16px;
+  margin-bottom: 10px;
 }
 
 .container p span {
@@ -59,3 +60,4 @@ Input {
 .container h1{
   font-size: 30px;
 }
+
