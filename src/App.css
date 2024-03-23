@@ -26,7 +26,11 @@
   border-radius: 6px;
   box-shadow: 2px 1px 3px gray;
 }
-
+form{
+  display: grid;
+  place-items: center;
+  width: 100%;
+}
 Input {
   height: 2vh;
   padding: 2%;  
