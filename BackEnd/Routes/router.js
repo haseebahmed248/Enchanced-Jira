@@ -6,7 +6,7 @@ router.use(express.json());
 
 router.post('/sign-up', (req, res) => {
     const { username, email, password } = req.body;
-
+    
     console.log(username + " | " + email + " | " + password);
 
     res.send('Received');

@@ -16,7 +16,7 @@ function SignUp() {
         email: email,
         password: password
       };
-      await axios.post('http://localhost:4000/sign-up', signupData);
+      const status = await axios.post('http://localhost:4000/insertUser', signupData);
       console.log("Signup successful!");
     } catch (error) {
       console.error("Error signing up:", error);
