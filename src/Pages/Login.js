@@ -4,6 +4,7 @@ import {Link} from 'react-router-dom'
 import InputField from './Components/InputField'
 import {useState} from 'react'
 import axios from 'axios'
+import GoogleApi from './Components/GoogleApi';
 
 function Login() {
   
@@ -41,7 +42,7 @@ function Login() {
         {errorMessage}
         </p>}
         
-        <h4>Continue with google</h4>
+        <GoogleApi />
         <p>Click here to <Link to='/signUp'>Sign-Up</Link></p>
         <button type="submit" className="signUp-BTN">Login</button>
       </form>

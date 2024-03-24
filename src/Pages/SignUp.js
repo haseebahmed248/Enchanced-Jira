@@ -2,22 +2,30 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import InputField from './Components/InputField';
 import axios from 'axios';
+import GoogleApi from './Components/GoogleApi';
 
 function SignUp() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  
+
+  const handleGoogleSuccess = ({ username, email }) => {
+    setUsername(username);
+    setEmail(email);
+    handleSubmit();
+  };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     try {
       const signupData = {
         username: username,
         email: email,
         password: password,
-        role:"User"
+        role: "User"
       };
+      console.log(signupData)
       await axios.post('http://localhost:4000/insertUser', signupData);
       console.log("Signup successful!");
     } catch (error) {
@@ -37,12 +45,8 @@ function SignUp() {
         <InputField type="text" placeholder="Enter your username" value={username} onChange={(e) => setUsername(e.target.value)} />
         <InputField type="email" placeholder="Enter your Email" value={email} onChange={(e) => setEmail(e.target.value)} />
         <InputField type="password" placeholder="Enter your password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        {errorMessage && <p className="error-message" 
-        style={{ color: "red" }}>
-        {errorMessage}
-        </p>}
-        
-        <h4>Continue with google</h4>
+        {errorMessage && <p className="error-message" style={{ color: "red" }}>{errorMessage}</p>}
+        <GoogleApi onSuccess={handleGoogleSuccess} />
         <p>Click here to <Link to='/'>Login</Link></p>
         <button type="submit" className="signUp-BTN">Sign-Up</button>
       </form>
