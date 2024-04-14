@@ -1,7 +1,8 @@
 const bodyParser = require('body-parser');
 const express = require('express')
 const cors = require('cors')
-const router = require('./Routes/router')
+const users = require('./Routes/router')
+const organization = require('./Routes/organization')
 
 
 const PORT = 4000;
@@ -12,7 +13,8 @@ app.use(cors({
     origin:'*'
 }))
 app.use(bodyParser.json())
-app.use('/',router);
+app.use('/users',users);
+app.use('/organization',organization)
 
 
 app.listen(PORT,(Req,res)=>{

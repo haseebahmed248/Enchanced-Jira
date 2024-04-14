@@ -30,9 +30,25 @@ router.post("/insertUser", async (req, res) => {
     }
 });
 
+router.post('/insertUserSub',async(req,res)=>{
+    const { username, email, role,sub } = req.body;
+    try {
+        const insertUser = await pool.query("INSERT INTO Users(username, email, role, sub) VALUES ($1, $2, $3, $4)", [username, email, role,sub]);
+        if(insertUser.rowCount > 0){
+        res.send(insertUser.rows).status(200);
+        }else{
+            res.send("erorr creating new user").status(401);
+        }
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).send("Error logging in");
+    }
+})
+
+
+
 router.post("/checkLogin",async(req,res)=>{
     const { email, password } = req.body;
-
 try {
     const getUser = await pool.query("SELECT * FROM Users WHERE email=$1", [email]);
     if (getUser.rows.length === 0) {
@@ -46,8 +62,23 @@ try {
     console.error("Error logging in:", error);
     res.status(500).send("Error logging in");
 }
+
 })
 
+
+router.post('/checkLoginSub',async(req,res)=>{
+    const sub = req.body.sub;
+    try {
+        const getUser = await pool.query("SELECT * FROM Users WHERE sub=$1", [sub]);
+        if (getUser.rows.length === 0) {
+            return res.status(401).send("Invalid email or password");
+        }
+        res.status(200).send(getUser.rows);
+    } catch (error) {
+        console.error("Error logging in:", error);
+        res.status(500).send("Error logging in");
+    }
+})
 router.post("/adminLogin",async(req,res)=>{
     const { username, password } = req.body;
 
