@@ -4,6 +4,9 @@ import Login from './Pages/Login';
 import SignUp from './Pages/SignUp';
 import AdminLogin from './Pages/AdminLogin';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Organizations from './Pages/Organizations';
+
+
 
 function App() {
   return (
@@ -13,6 +16,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route path="/signUp" element={<SignUp />} />
           <Route path='/admin' element={<AdminLogin />} />  
+          <Route path="/organizations" element={<Organizations />} />
         </Routes>
       </div>
     </BrowserRouter>

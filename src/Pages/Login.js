@@ -1,26 +1,52 @@
-// Login.js
 import React from 'react'
-import {Link} from 'react-router-dom'
+import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
 import {useState} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
 
 function Login() {
-  
+  const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+
+  const handleGoogleSuccess = async ({ username, email, sub }) => {
+    setEmail(email);
+    console.log(sub)
+    handleGoogleSubmit({ sub });
+  };
+
+  const handleGoogleSubmit = async ({ sub }) => {
+    try {
+      const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
+      console.log(sub);
+      if (response.status === 200) {
+        navigate('/organizations');
+      } else {
+        setErrorMessage("An error occurred during Login");
+      }
+    } catch (e) {
+      console.log("Login Api error");
+      setErrorMessage("An error occurred during Login");
+      console.log(e)
+    }
+  };
+  const handleSubmit = async () => {
+    
     try {
       const loginData = {
         email: email,
         password: password
       };
-      await axios.post('http://localhost:4000/checkLogin', loginData);
+      const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
+      if (response.status === 200) {
+        navigate('/organizations');
+      } else {
+        setErrorMessage("An error occurred during Login");
+      }
+
     } catch (error) {
       console.error("Error Logging in:", error);
       if (error.response && error.response.status === 400) {
@@ -41,8 +67,8 @@ function Login() {
         style={{ color: "red" }}>
         {errorMessage}
         </p>}
-        
-        <GoogleApi />
+
+        <GoogleApi handleGoogleSuccess={handleGoogleSuccess}/>
         <p>Click here to <Link to='/signUp'>Sign-Up</Link></p>
         <button type="submit" className="signUp-BTN">Login</button>
       </form>

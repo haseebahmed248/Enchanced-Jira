@@ -32,11 +32,13 @@ form{
   width: 100%;
 }
 Input {
-  height: 2vh;
   padding: 2%;  
   margin: 3%;
-  width: 60%;
   border-radius: 6px; 
+}
+.custom-input-height {
+  height: 40px; 
+  width: 60%;
   border: 1px solid gray;
 }
 
@@ -60,4 +62,3 @@ Input {
 .container h1{
   font-size: 30px;
 }
-
