@@ -32,8 +32,8 @@ function Login() {
       console.log(e)
     }
   };
-  const handleSubmit = async () => {
-    
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
       const loginData = {
         email: email,
