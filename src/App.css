@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind componenets;
+@tailwind utilities;
+
 * {
   font-size: 13px;
   font-weight: 460;

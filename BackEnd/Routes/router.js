@@ -5,6 +5,17 @@ const router = express.Router();
 // Add middleware to parse JSON bodies
 router.use(express.json());
 
+router.get('/getUsers', async (req, res) => {
+    try {
+        const data = await pool.query("SELECT * FROM Users WHERE role != 'admin'");
+        res.json(data.rows).status(200);
+    } catch (e) {
+        res.json(e).status(500);
+    }
+})
+
+
+
 router.post('/sign-up', (req, res) => {
     const { username, email, password } = req.body;
     
@@ -90,7 +101,7 @@ try {
     if (password != getUser.rows[0].password) {
         return res.status(401).send("Invalid email or password");
     }
-    if(getUser.rows[0].role != "Admin"){
+    if(getUser.rows[0].role != "admin"){
         return res.status(401).send("Invalid email or password");
     }
     res.status(200).send("Logged-In");
