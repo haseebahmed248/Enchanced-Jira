@@ -1,0 +1,3 @@
+.actions--table--buttons button:not(:last-child){
+    margin: 5px;
+}   
