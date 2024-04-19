@@ -1,0 +1,11 @@
+*{
+    font-weight: 300;
+    letter-spacing: 3px;
+}
+body{
+    background-color: rgb(245, 248, 250);
+}
+.orgContainer{
+    width: 80%;
+    margin-top: 10%;
+  }
