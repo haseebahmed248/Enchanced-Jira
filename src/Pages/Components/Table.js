@@ -9,9 +9,7 @@ export default function Table(){
     const [usersData, setUsersData] = useState([]);
     const [open,setOpen]= useState(false); // for opening dialog
     const [currentUser,setCurrentUser] = useState([]);
-    const columns = [{Name:"u_id",options:{
-        display:false
-    }},"username", "email", "password", "role", "sub","Operations"];
+    const columns = ["u_id","username", "email", "password", "role", "sub","Operations"];
     
     useEffect(() => {
         axios.get('http://localhost:4000/users/getUsers')
@@ -19,7 +17,7 @@ export default function Table(){
             setUsersData(res.data);
         })
     }, []);
-
+    
     const options = {
         filterType: 'checkbox',
         selectableRows: false,
@@ -27,7 +25,7 @@ export default function Table(){
         rowsPerPage: 10,
         rowsPerPageOptions: [10, 20, 30, 40],
     };
-
+    
     const getMuiTheme = () => createTheme({
         components: {
             MuiTableCell: {
@@ -76,9 +74,6 @@ export default function Table(){
     };
     
     // Add custom render function to the "Operations" column
-    columns[0] = {
-        name:"u_id"
-    }
     columns[columns.length - 1] = {
         name: "Operations",
         options: {
@@ -98,11 +93,11 @@ export default function Table(){
             />
         </ThemeProvider>
         <EditUser open={open} handleClose={handleClose} 
-        username={currentUser[0]? currentUser[0]:''} 
-        email={currentUser[1]? currentUser[1]:''} 
-        password={currentUser[2]? currentUser[2]:''} 
-        role={currentUser[3]? currentUser[3]:''} 
-        sub={currentUser[4]? currentUser[4]:''} />
+        username={currentUser[1]? currentUser[1]:''} 
+        email={currentUser[2]? currentUser[2]:''} 
+        password={currentUser[3]? currentUser[3]:''} 
+        role={currentUser[4]? currentUser[4]:''} 
+        sub={currentUser[5]? currentUser[5]:''} />
         </React.Fragment>
     );
 }
