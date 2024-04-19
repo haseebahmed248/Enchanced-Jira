@@ -252,7 +252,7 @@ router.post('/checkLoginSub', async (req, res) => {
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).send("Error during login");
-=======
+    }
 try {
     const getUser = await pool.query("SELECT * FROM Users WHERE username=$1", [username]);
     if (getUser.rows.length === 0) {
@@ -264,6 +264,10 @@ try {
     if(getUser.rows[0].role != "admin"){
         return res.status(401).send("Invalid email or password");
     }
+}
+catch(e){
+    res.send('error').status(500);
+}
 });
 
 // router.post("/adminLogin",async(req,res)=>{
@@ -305,7 +309,7 @@ router.post("/adminLogin", async (req, res) => {
         }
 
         // Check if the user has the role of Admin
-        if (getUser.rows[0].role !== "Admin") {
+        if (getUser.rows[0].role !== "admin") {
             return res.status(401).send("Invalid email or password");
         }
 
