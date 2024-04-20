@@ -174,13 +174,7 @@ router.post("/adminLogin", async (req, res) => {
         }
 
        
-        const validPassword = await bcrypt.compare(password, getUser.rows[0].password);
         
-        if (!validPassword) {
-            return res.status(401).send("Invalid email or password");
-        }
-
-       
         if (getUser.rows[0].role !== "admin") {
             return res.status(401).send("Invalid email or password");
         }
