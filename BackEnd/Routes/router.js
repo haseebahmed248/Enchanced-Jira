@@ -15,6 +15,42 @@ router.get('/getUsers', async (req, res) => {
         res.json(e).status(500);
     }
 })
+router.put('/updateUser/:userId', async (req, res) => {
+    const userId = req.params.userId; // Retrieve userId from request parameters
+    const { username, email, password, role, sub } = req.body;
+
+    try {
+        const updateUser = await pool.query(
+            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5 WHERE u_id = $6",
+            [username, email, password, role, sub, userId]
+        );
+
+        if (updateUser.rowCount > 0) {
+            res.status(200).send("User updated successfully");
+        } else {
+            res.status(404).send("User not found or update failed");
+        }
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send("Error updating user");
+    }
+});
+router.delete('/deleteUser/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const deleteUser = await pool.query("DELETE FROM Users WHERE u_id = $1", [userId]);
+        
+        if (deleteUser.rowCount > 0) {
+            res.status(200).send("User deleted successfully");
+        } else {
+            res.status(404).send("User not found or deletion failed");
+        }
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).send("Error deleting user: " + error.message); // Send detailed error message
+    }
+});
 
 
 
