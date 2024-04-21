@@ -4,9 +4,11 @@ const express = require('express')
 const cors = require('cors')
 const users = require('./Routes/router')
 const organization = require('./Routes/organization')
+const dotenv = require('dotenv')
+dotenv.config()
 
 
-const PORT = 4000;
+const PORT = process.env.PORT;
 
 const app = express();
 
@@ -31,6 +33,6 @@ app.use('/users',users);
 app.use('/organization',organization)
 
 
-app.listen(PORT,(Req,res)=>{
+app.listen(PORT,()=>{
     console.log(`Servier is Listening to Port ${PORT}`);
 })
