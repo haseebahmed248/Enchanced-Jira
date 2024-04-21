@@ -21,7 +21,9 @@ export default function EditUser({open, handleClose,username,password,email,role
         keepMounted
         onClose={handleClose}
         aria-describedby="alert-dialog-slide-description"
-        fullWidth={true}
+        fullWidth={100}
+        maxWidth={'md'}
+        
       >
         <DialogTitle>{"Edit User Information"}</DialogTitle>
         <label className='edit--users--labels'>UserName:</label>

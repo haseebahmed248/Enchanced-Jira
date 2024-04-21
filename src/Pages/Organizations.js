@@ -7,6 +7,7 @@ import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import './CSS/Organizations.css'
 
+
 const ORG_URI = "http://localhost:4000/organization/all";
 
 
