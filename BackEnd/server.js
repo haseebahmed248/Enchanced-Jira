@@ -2,8 +2,9 @@
 const bodyParser = require('body-parser');
 const express = require('express')
 const cors = require('cors')
-const users = require('./Routes/router')
+const users = require('./Routes/users')
 const organization = require('./Routes/organization')
+const admin = require('./Routes/admin')
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -31,7 +32,7 @@ app.use(session({
 app.use(bodyParser.json())
 app.use('/users',users);
 app.use('/organization',organization)
-
+app.use('/admin',admin)
 
 app.listen(PORT,()=>{
     console.log(`Servier is Listening to Port ${PORT}`);

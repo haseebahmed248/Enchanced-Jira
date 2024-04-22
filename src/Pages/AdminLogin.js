@@ -19,7 +19,7 @@ function AdminLogin() {
         username: username,
         password: password
       };
-      await axios.post('http://localhost:4000/users/adminLogin', loginData);
+      await axios.post('http://localhost:4000/admin/adminLogin', loginData);
       console.log("Login successful!");
       Navigate('/admin/Dashboard')
     } catch (error) {
