@@ -54,7 +54,7 @@ function SignUp() {
       console.log(signupData)
       await axios.post('http://localhost:4000/users/insertUser', signupData);
       console.log("Signup successful!");
-      navigate('/organizations');
+      navigate('/');
     } catch (error) {
       console.error("Error signing up:", error);
       if (error.response && error.response.status === 400) {

@@ -22,7 +22,7 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        navigate('/organizations');
+        navigate('/');
       } else {
         setErrorMessage("An error occurred during Login");
       }
