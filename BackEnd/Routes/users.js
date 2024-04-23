@@ -70,23 +70,16 @@ router.post("/insertUser", async (req, res) => {
     const { username, email, password, role } = req.body;
 
     try {
-       
         const hashedPassword = await bcrypt.hash(password, 10);
-        
-       
         const insertUser = await pool.query(
             "INSERT INTO Users(username, email, password, role) VALUES ($1, $2, $3, $4)",
             [username, email, hashedPassword, role]
         );
-
-       
         req.session.user = {
-            username,
-            email,
-            role
+            username: req.body.username,
+            email: req.body.email,
+            role: req.body.role
         };
-
-       
         res.status(200).send("User inserted successfully");
     } catch (error) {
        
@@ -94,45 +87,8 @@ router.post("/insertUser", async (req, res) => {
             res.status(400).send("Error: Email already registered");
         } else {
             console.error("Error inserting user:", error);
-            res.status(500).send("Error inserting user");
+            res.status(500).send("Error inserting user",error);
         }
-    }
-});
-
-
-
-
-router.post('/sign-up', async (req, res) => {
-    const { username, email, password, role = 'user' } = req.body;
-
-    try {
-       
-        const hashedPassword = await bcrypt.hash(password, 10);
-
-      
-        const insertUser = await pool.query(
-            "INSERT INTO Users(username, email, password, role) VALUES ($1, $2, $3, $4)",
-            [username, email, hashedPassword, role]
-        );
-
-        
-        if (insertUser.rowCount > 0) {
-           
-            req.session.user = {
-                username,
-                email,
-                role
-            };
-
-         
-            res.status(200).send("User signed up and session created successfully");
-        } else {
-            res.status(400).send("Error signing up user");
-        }
-    } catch (error) {
-       
-        console.error("Error signing up user:", error);
-        res.status(500).send("Error signing up user");
     }
 });
 
@@ -184,7 +140,7 @@ router.post("/checkLogin", async (req, res) => {
         
        
         req.session.user = {
-            id: getUser.rows[0].id,
+            id: getUser.rows[0].u_id,
             email: getUser.rows[0].email,
             username: getUser.rows[0].username,
             role: getUser.rows[0].role,

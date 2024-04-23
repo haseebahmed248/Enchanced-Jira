@@ -20,12 +20,13 @@ const session = require('express-session');
 
 
 app.use(session({
-    secret: 'your_secret_key', 
+    secret: process.env.SECRET, 
     resave: false,
     saveUninitialized: true,
     cookie: {
         httpOnly: true,
-        secure: false, 
+        secure: "auto", 
+        sameSite: "lax"
     }
 }));
 
