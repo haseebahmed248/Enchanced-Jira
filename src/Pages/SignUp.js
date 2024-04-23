@@ -4,9 +4,11 @@ import InputField from './Components/InputField';
 import axios from 'axios';
 import GoogleApi from './Components/GoogleApi';
 
+
 function SignUp() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('');
+  const [userId, setUserId] = useState(null); 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -32,6 +34,7 @@ function SignUp() {
       );
   
       if (response.status === 200) {
+        setUserId(response.data.userId); // Store user ID
         navigate("/organizations");
       } else {
         setErrorMessage("An error occurred during SignUp");
@@ -41,6 +44,9 @@ function SignUp() {
       setErrorMessage("An error occurred during SignUp");
     }
   };
+
+  
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -82,3 +88,5 @@ function SignUp() {
 }
 
 export default SignUp;
+
+

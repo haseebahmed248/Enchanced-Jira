@@ -15,6 +15,26 @@ router.get('/getUsers', async (req, res) => {
         res.json(e).status(500);
     }
 })
+router.get('/getUserById/:userId', async (req, res) => {
+    const userId = req.params.userId;
+
+    try {
+        const query = {
+            text: "SELECT * FROM Users WHERE id = $1 AND role != 'admin'",
+            values: [userId]
+        };
+
+        const data = await pool.query(query);
+        if (data.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(200).json(data.rows[0]);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
 router.put('/updateUser/:userId', async (req, res) => {
     const userId = req.params.userId; // Retrieve userId from request parameters
     const { username, email, password, role, sub } = req.body;

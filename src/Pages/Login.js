@@ -8,13 +8,27 @@ import GoogleApi from './Components/GoogleApi';
 function Login() {
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
-    handleGoogleSubmit({ sub });
+    try {
+      const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
+      console.log(sub);
+      if (response.status === 200) {
+        setUserId(response.data.userId); // Store user ID
+        navigate('/organizations');
+      } else {
+        setErrorMessage("An error occurred during Login");
+      }
+    } catch (e) {
+      console.log("Login Api error");
+      setErrorMessage("An error occurred during Login");
+      console.log(e)
+    }
   };
 
   const handleGoogleSubmit = async ({ sub }) => {
