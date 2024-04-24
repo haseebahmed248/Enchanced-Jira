@@ -4,6 +4,7 @@ import { Grid } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import '../CSS/AdminDashboard.css'
+import OrganizationCard from "../Components/OrganizationCard";
 
 export default function AdminDashboard(){
     const [selectedItem, setSelectedItem] = useState("Users");
@@ -32,17 +33,26 @@ export default function AdminDashboard(){
                 <Grid item xs={2}>
                     <Item style={{marginBottom:'10px',borderRadius:'0px',boxShadow:'none'}}>
                         <ul className="admin--dashboard--ul">
-                            <li className={selectedItem === "Users" ? "selected" : ""} onClick={() => handleItemClick("Users")}>Users</li>
-                            <li className={selectedItem === "Admins" ? "selected" : ""} onClick={() => handleItemClick("Admins")}>Admins</li>
+                            <li className={selectedItem === "Users" ? "selected" : ""} onClick={() =>{ handleItemClick("Users")
+                            setSelectedItem("Users")
+                        }}>Users</li>
+                            <li className={selectedItem === "Admins" ? "selected" : ""} onClick={() =>{ 
+                                handleItemClick("Admins")
+                                setSelectedItem("Admins")
+                                }}>Admins</li>
                         </ul>
                     </Item>
                 </Grid>
                 <Grid item xs={10} sx={{padding:'10px'}}>
                     <Item >
-                        <Table />
+                        {selectedItem === "Users"?
+                        <Table />:<OrganizationCard/>}
                     </Item>
                 </Grid>
             </Grid>
         </div>
     );
 }
+
+
+
