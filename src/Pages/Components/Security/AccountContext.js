@@ -3,9 +3,10 @@ import React, { createContext, useState } from 'react';
 export const AccountContext = createContext();
 
 const UserContextProvider = ({ children }) => {
-    const [user, setUser] = useState({ loggedIn: null });
+    const user ={ loggedIn: null };
+    const test = "hello";
     return (
-        <AccountContext.Provider value={{ user, setUser }}>
+        <AccountContext.Provider value={ user}>
             {children}
         </AccountContext.Provider>
     );

@@ -32,6 +32,7 @@ function SignUp() {
       );
   
       if (response.status === 200) {
+        username.loggedIn = true;
         navigate("/organizations");
       } else {
         setErrorMessage("An error occurred during SignUp");

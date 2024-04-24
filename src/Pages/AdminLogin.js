@@ -9,7 +9,7 @@ import { AccountContext } from './Components/Security/AccountContext';
 
 function AdminLogin() {
   const user = useContext(AccountContext);
-  const setUser = useContext(AccountContext);
+  // const test = useContext(AccountContext)
   const Navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -23,13 +23,11 @@ function AdminLogin() {
         password: password
       };
       await axios.post('http://localhost:4000/admin/adminLogin', loginData);
-      
-      setUser({loggedIn:true});
-      console.log(AccountContext)
-      console.log("Login successful!",user);
+      user.loggedIn = true;
       Navigate('/admin/Dashboard')
     } catch (error) {
       console.error("Error Login up:", error);
+      user.loggedIn = false;
       if (error.response && error.response.status === 401) {
         setErrorMessage("Invalide Credentails");
       } else {
