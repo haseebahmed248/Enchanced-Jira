@@ -147,10 +147,12 @@ router.post("/checkLogin", async (req, res) => {
         };
         
        
-        res.status(200).send("Logged-In");
+        res.status(200).json({message:"Logged-In",
+    loggedIn:true});
     } catch (error) {
         console.error("Error logging in:", error);
-        res.status(500).send("Error logging in");
+        res.status(500).json({message:"Error Logging-In",
+        loggedIn:false});
     }
 });
 
