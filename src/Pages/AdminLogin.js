@@ -2,11 +2,14 @@
 import React from 'react'
 import InputField from './Components/InputField'
 import {Link} from 'react-router-dom'
-import {useState} from 'react';
+import {useState,useContext} from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AccountContext } from './Components/Security/AccountContext';
 
 function AdminLogin() {
+  const user = useContext(AccountContext);
+  const setUser = useContext(AccountContext);
   const Navigate = useNavigate();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -20,7 +23,10 @@ function AdminLogin() {
         password: password
       };
       await axios.post('http://localhost:4000/admin/adminLogin', loginData);
-      console.log("Login successful!");
+      
+      setUser({loggedIn:true});
+      console.log(AccountContext)
+      console.log("Login successful!",user);
       Navigate('/admin/Dashboard')
     } catch (error) {
       console.error("Error Login up:", error);
