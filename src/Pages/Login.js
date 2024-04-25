@@ -1,23 +1,39 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
 import {useState, useContext} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
+
+import UserContext from './Components/UserContext'
 import { AccountContext } from './Components/Security/AccountContext'
 
-
 function Login() {
+  const userId = useContext(UserContext)
   const user = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
+  const [userID, setUserId] = useState(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
-    handleGoogleSubmit({ sub });
+    try {
+      const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
+      console.log(sub);
+      if (response.status === 200) {
+        setUserId(response.data.userId); // Store user ID
+        navigate('/organizations');
+      } else {
+        setErrorMessage("An error occurred during Login");
+      }
+    } catch (e) {
+      console.log("Login Api error");
+      setErrorMessage("An error occurred during Login");
+      console.log(e)
+    }
   };
 
   const handleGoogleSubmit = async ({ sub }) => {
@@ -45,6 +61,8 @@ function Login() {
       };
       const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
+      userId.email = response.data[0].email
+      console.log(response)
       if (response.status === 200) {
         user.loggedIn = true;
         navigate('/organizations');
