@@ -1,14 +1,16 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
 import {useState} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
+import UserContext from './Components/UserContext'
 
 function Login() {
+  const userId = useContext(UserContext)
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
-  const [userId, setUserId] = useState(null);
+  const [userID, setUserId] = useState(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -55,6 +57,8 @@ function Login() {
       };
       const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
+      userId.email = response.data[0].email
+      console.log(response)
       if (response.status === 200) {
         navigate('/organizations');
       } else {

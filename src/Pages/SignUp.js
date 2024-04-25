@@ -95,10 +95,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import InputField from './Components/InputField';
 import axios from 'axios';
 import GoogleApi from './Components/GoogleApi';
+import UserContext from './Components/UserContext';
 
 function SignUp() {
   const navigate = useNavigate();
-  // const setUserId = useContext(UserContext); // Access setUserId from the context
+  const userId = useContext(UserContext); // Access setUserId from the context
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -126,7 +127,8 @@ function SignUp() {
 
       if (response.status === 200) {
         // setUserId(response.data.userId); // Store user ID in context
-        
+        userId.email = response.data.email;
+        console.log(response.data.email)
         navigate("/organizations");
       } else {
         setErrorMessage("An error occurred during SignUp");
@@ -147,15 +149,15 @@ function SignUp() {
         role: "User"
       };
       console.log(signupData)
-      await axios.post('http://localhost:4000/users/insertUser', signupData);
-      console.log("Signup successful!");
-      navigate('/');
-
       const response = await axios.post('http://localhost:4000/users/insertUser', signupData);
+      console.log("Signup successful!", response);
+      
+
+      
       
       if (response.status === 200) {
-        // setUserId(response.data.userId); // Store user ID in context
-        // navigate('/organizations');
+        userId.email = response.data.email;
+        navigate('/');
       } else {
         setErrorMessage("An error occurred during sign-up");
       }

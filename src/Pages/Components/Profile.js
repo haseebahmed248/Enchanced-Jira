@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
@@ -9,29 +9,31 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
+import UserContext from './UserContext';
 
-function ProfileComponent({ onClose, userId }) {
+function ProfileComponent({ onClose }) {
+  const userId = useContext(UserContext); // Accessing email from UserContext
   const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useState({
     username: '',
     email: '',
     password: '',
     image: null,
+    sub:'',
+    role:''
   });
 
   useEffect(() => {
-    if (userId) {
-      getUserById(userId);
-    }
-  }, [userId]);
+   
+    getUserByEmail()
+  }, []);
 
-  const getUserById = async (userId) => {
+  const getUserByEmail = async (email) => {
     try {
-      console.log('Fetching user data for userId:', userId);
-      const response = await axios.get(`/getUserById/${userId}`);
-      console.log('Response data:', response.data);
-      const { username, email, password, image } = response.data;
-      setUserData((prevUserData) => ({ ...prevUserData, username, email, password, image }));
+      const response = await axios.get(`http://localhost:4000/users/getUserByEmail/${userId.email}`);
+      const { username, email, password,role,sub } = response.data;
+      console.log("res",response)
+      setUserData({ username, email, password, role,sub });
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -57,19 +59,25 @@ function ProfileComponent({ onClose, userId }) {
       formData.append('username', userData.username);
       formData.append('email', userData.email);
       formData.append('password', userData.password);
-      formData.append('image', userData.image); 
+      formData.append('image', userData.image);
+  //http://localhost:4000/users/updateUser/aimannn@gmail.com
+  const body={
+    username:userData.username,
+    email:userData.email,
+    password:userData.password,
+    role:userData.role,
+    sub:userData.sub,
 
-      await axios.put(`/updateUser/${userId}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+  }
+  console.log("body",body)
+      const response = await axios.put(`http://localhost:4000/users/updateUser/${userId.email}`,body );
+  
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
     }
   };
-
+  
   return (
     <Box
       sx={{
@@ -84,6 +92,7 @@ function ProfileComponent({ onClose, userId }) {
         padding: '20px',
         borderRadius: '8px',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
+        zIndex:10
       }}
     >
       <IconButton onClick={onClose} sx={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
@@ -94,9 +103,7 @@ function ProfileComponent({ onClose, userId }) {
         Profile
       </Typography>
 
-      {/* Profile Circle */}
       <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'lightgray', marginBottom: '20px' }}>
-        {/* Display uploaded image if available */}
         {userData.image ? (
           <img src={URL.createObjectURL(userData.image)} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
         ) : (
@@ -104,7 +111,6 @@ function ProfileComponent({ onClose, userId }) {
         )}
       </div>
 
-      {/* File Input for Image */}
       <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="image-input" />
       <label htmlFor="image-input">
         <Button variant="outlined" component="span">
@@ -113,9 +119,7 @@ function ProfileComponent({ onClose, userId }) {
       </label>
 
       <TextField name="username" label="Username" value={userData.username} onChange={handleInputChange} fullWidth margin="normal" />
-
       <TextField name="email" label="Email" value={userData.email} onChange={handleInputChange} fullWidth margin="normal" />
-
       <TextField
         name="password"
         label="Password"
@@ -127,12 +131,11 @@ function ProfileComponent({ onClose, userId }) {
         InputProps={{
           endAdornment: (
             <IconButton onClick={togglePasswordVisibility} size="small">
-              {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
             </IconButton>
           ),
         }}
       />
-
       <Button variant="contained" onClick={handleSave} sx={{ marginTop: '20px' }}>
         Save
       </Button>
