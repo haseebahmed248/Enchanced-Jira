@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../DataBase/db')
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const authLogin = require('../Controller/authLogin')
 
 
 // Add middleware to parse JSON bodies
@@ -120,7 +121,10 @@ router.post('/insertUserSub', async (req, res) => {
 
 
 
-router.post("/checkLogin", async (req, res) => {
+router
+.route("/checkLogin")
+.get(authLogin.handleLogin)
+.post( async (req, res) => {
     const { email, password } = req.body;
 
     try {

@@ -4,6 +4,7 @@ import InputField from './Components/InputField';
 import axios from 'axios';
 import GoogleApi from './Components/GoogleApi';
 
+
 function SignUp() {
   const navigate = useNavigate()
   const [username, setUsername] = useState('');
