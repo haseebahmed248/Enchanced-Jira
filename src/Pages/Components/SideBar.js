@@ -1,9 +1,11 @@
+// Sidebar.js
 import React, { useState } from 'react';
 import { Grid, ListItem, List } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Friends from './Friends';
 import ListItemButton from '@mui/material/ListItemButton';
+import MessagePanel from './MessagePanel';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -14,10 +16,17 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Sidebar() {
-  const [selectedItem, setSelectedItem] = useState("Test");
+  const [selectedItem, setSelectedItem] = useState("Projects");
+  const [open, setOpen] = useState(false); // State for opening message panel
+  const [friendName, setFriendName] = useState(""); // State for storing friend name
 
   const handleItemClick = (item) => {
     setSelectedItem(item);
+  };
+
+  const openMessagePanel = (name) => {
+    setFriendName(name);
+    setOpen(true);
   };
 
   return (
@@ -25,7 +34,7 @@ export default function Sidebar() {
       <Grid item xs={1.5}>
         <Item elevation={0} square variant='outlined' sx={{ height: '49%', overflow: 'scroll' }}>
           <h2>DM's</h2>
-          <Friends image={'./Jira.png'} username={"haseeb"} />
+          <Friends image={'./Jira.png'} username={"haseeb"} onClick={() => openMessagePanel("haseeb")} />
           <Friends image={'./Jira.png'} username={"Customizable Robot"} />
           <Friends username={"Test"} />
         </Item>
@@ -34,10 +43,10 @@ export default function Sidebar() {
             <ListItem sx={{display:'block'}}>
               <ListItemButton
                 sx={{ borderRadius: 1, marginBottom: "10px" }}
-                className={selectedItem === 'Test' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
-                onClick={() => handleItemClick('Test')}
+                className={selectedItem === 'Projects' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
+                onClick={() => handleItemClick('Projects')}
               >
-                Test
+                Projects
               </ListItemButton>
               <ListItemButton
                 sx={{ borderRadius: 1, marginBottom: "10px" }}
@@ -58,7 +67,7 @@ export default function Sidebar() {
         </Item>
       </Grid>
       <Grid item xs={10.5}>
-        <Item elevation={0} square sx={{ height: '100%' }}>World</Item>
+        <MessagePanel open={open} name={friendName} setOpen={setOpen} />
       </Grid>
     </Grid>
   );

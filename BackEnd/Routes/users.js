@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../DataBase/db')
 const router = express.Router();
 const bcrypt = require('bcrypt');
+const authLogin = require('../Controller/authLogin')
 
 
 // Add middleware to parse JSON bodies
@@ -164,7 +165,10 @@ router.post('/logout/:email', (req, res) => {
 
 
 
-router.post("/checkLogin", async (req, res) => {
+router
+.route("/checkLogin")
+.get(authLogin.handleLogin)
+.post( async (req, res) => {
     const { email, password } = req.body;
 
     try {
@@ -191,10 +195,11 @@ router.post("/checkLogin", async (req, res) => {
         };
         
        
-        res.status(200).send(getUser.rows);
+        res.status(200).json({data: getUser.rows, loggedIn:true});
     } catch (error) {
         console.error("Error logging in:", error);
-        res.status(500).send("Error logging in");
+        res.status(500).json({message:"Error Logging-In",
+        loggedIn:false});
     }
 });
 

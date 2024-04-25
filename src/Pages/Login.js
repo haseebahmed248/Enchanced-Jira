@@ -1,13 +1,16 @@
 import React, { useContext } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
-import {useState} from 'react'
+import {useState, useContext} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
+
 import UserContext from './Components/UserContext'
+import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
   const userId = useContext(UserContext)
+  const user = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [userID, setUserId] = useState(null);
@@ -38,7 +41,8 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        navigate('/');
+        user.loggedIn = true;
+        navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
       }
@@ -60,6 +64,7 @@ function Login() {
       userId.email = response.data[0].email
       console.log(response)
       if (response.status === 200) {
+        user.loggedIn = true;
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");

@@ -97,6 +97,7 @@ import axios from 'axios';
 import GoogleApi from './Components/GoogleApi';
 import UserContext from './Components/UserContext';
 
+
 function SignUp() {
   const navigate = useNavigate();
   const userId = useContext(UserContext); // Access setUserId from the context
@@ -126,9 +127,9 @@ function SignUp() {
       );
 
       if (response.status === 200) {
-        // setUserId(response.data.userId); // Store user ID in context
         userId.email = response.data.email;
         console.log(response.data.email)
+        username.loggedIn = true;
         navigate("/organizations");
       } else {
         setErrorMessage("An error occurred during SignUp");
