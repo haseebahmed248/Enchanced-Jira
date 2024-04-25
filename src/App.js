@@ -13,7 +13,6 @@ import UserContextProvider from './Pages/Components/Security/AccountContext'; //
 
 function App() {
   return (
-    <UserProvider>
     <BrowserRouter>
 
       <UserContextProvider>

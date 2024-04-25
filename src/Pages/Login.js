@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
 import {useState, useContext} from 'react'
@@ -23,8 +23,11 @@ function Login() {
     try {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
+      console.log(response)
       if (response.status === 200) {
-        setUserId(response.data.userId); // Store user ID
+        userId.email = response.data.user.email
+        console.log(userId.email)
+        user.loggedIn = true;
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -61,7 +64,7 @@ function Login() {
       };
       const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
-      userId.email = response.data[0].email
+      userId.email = response.data.data[0].email
       console.log(response)
       if (response.status === 200) {
         user.loggedIn = true;
