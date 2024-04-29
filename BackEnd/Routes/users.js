@@ -16,14 +16,34 @@ router.get('/getUsers', async (req, res) => {
         res.json(e).status(500);
     }
 })
-router.put('/updateUser/:userId', async (req, res) => {
-    const userId = req.params.userId; // Retrieve userId from request parameters
+router.get('/getUserByEmail/:email', async (req, res) => {
+    const userEmail = req.params.email; // Retrieve user email from request parameters
+
+    try {
+        const query = {
+            text: "SELECT * FROM Users WHERE email = $1 AND role != 'admin'",
+            values: [userEmail]
+        };
+
+        const data = await pool.query(query);
+        if (data.rows.length === 0) {
+            return res.status(404).json({ message: 'User not found', email: userEmail });
+        }
+        
+        res.status(200).json(data.rows[0]);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
+});
+
+router.put('/updateUser/:email', async (req, res) => {
+    const userEmail = req.params.email; // Retrieve user email from request parameters
     const { username, email, password, role, sub } = req.body;
 
     try {
         const updateUser = await pool.query(
-            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5 WHERE u_id = $6",
-            [username, email, password, role, sub, userId]
+            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5 WHERE email = $6",
+            [username, email, password, role, sub, userEmail]
         );
 
         if (updateUser.rowCount > 0) {
@@ -36,6 +56,7 @@ router.put('/updateUser/:userId', async (req, res) => {
         res.status(500).send("Error updating user");
     }
 });
+
 router.delete('/deleteUser/:userId', async (req, res) => {
     const userId = req.params.userId;
 
@@ -117,6 +138,29 @@ router.post('/insertUserSub', async (req, res) => {
     }
 });
 
+router.post('/logout/:email', (req, res) => {
+    // try {
+        const userEmail = req.params.email.toLowerCase().trim(); // Convert to lowercase and trim whitespace
+        
+        // Log the session to check if it exists
+        console.log("Session before destruction:", req.session);
+
+        // Check if the user is logged in with the provided email
+    //     if (req.session.user && req.session.user.email === userEmail) {
+    //         req.session.destroy(); // Destroy the session
+    //         return res.status(200).send("Logged out successfully");
+    //     } else {
+    //         // If the user is not logged in with the provided email, send an error response
+    //         return res.status(400).send("Invalid email or user not logged in");
+    //     }
+    // } catch (error) {
+    //     console.error("Error logging out:", error);
+    //     res.status(500).send("Error logging out");
+    // }
+});
+
+
+
 
 
 
@@ -151,8 +195,7 @@ router
         };
         
        
-        res.status(200).json({message:"Logged-In",
-    loggedIn:true});
+        res.status(200).json({data: getUser.rows, loggedIn:true});
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).json({message:"Error Logging-In",
@@ -199,4 +242,4 @@ router.post('/checkLoginSub', async (req, res) => {
 
 
  
- module.exports = router;
+ module.exports = router;
