@@ -9,8 +9,7 @@ import UserContext from './Components/UserContext'
 import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
-  const user = useContext(AccountContext);
-  const userId = useContext(UserContext);
+  const [user,setUser] = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [userID, setUserId] = useState(null);
@@ -51,7 +50,7 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        user.loggedIn = true;
+        setUser({ loggedIn: true });
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -74,8 +73,9 @@ function Login() {
       userId.email = response.data.data[0].email
       console.log(response)
       if (response.status === 200) {
-        user.loggedIn = true;
+        // user.loggedIn = true;
         console.log("logged-in")
+        setUser({loggedIn:true});
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
