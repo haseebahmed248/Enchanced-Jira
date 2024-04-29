@@ -3,7 +3,7 @@ const pool = require('../DataBase/db')
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const authLogin = require('../Controller/authLogin')
-
+const {v4: uuidv4} = require('uuid');
 
 // Add middleware to parse JSON bodies
 router.use(express.json());
@@ -73,13 +73,15 @@ router.post("/insertUser", async (req, res) => {
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const insertUser = await pool.query(
-            "INSERT INTO Users(username, email, password, role) VALUES ($1, $2, $3, $4)",
-            [username, email, hashedPassword, role]
+            "INSERT INTO Users(username, email, password, role, user_id) VALUES ($1, $2, $3, $4)",
+            [username, email, hashedPassword, role,
+                uuidv4()]
         );
         req.session.user = {
             username: req.body.username,
             email: req.body.email,
-            role: req.body.role
+            role: req.body.role,
+            userid:insertUser.rows[0].user_id
         };
         res.status(200).send("User inserted successfully");
     } catch (error) {
@@ -148,6 +150,7 @@ router
             email: getUser.rows[0].email,
             username: getUser.rows[0].username,
             role: getUser.rows[0].role,
+            user_id:getUser.rows[0].user_id
         };
         
        

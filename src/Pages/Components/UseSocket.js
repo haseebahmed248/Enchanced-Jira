@@ -1,6 +1,8 @@
-const { useEffect, useContext } = require("react")
-import { AccountContext } from "./Security/AccountContext";
 import Socket from "./Socket";
+import { AccountContext } from "./Security/AccountContext";
+const { useEffect, useContext } = require("react")
+
+
 
 const UseSocket = ()=>{
     const user = useContext(AccountContext)
@@ -10,7 +12,6 @@ const UseSocket = ()=>{
             user.loggedIn = false;
         })
         return ()=>{
-            //for cleaning
             Socket.off('connect_error');
         }
     },[user]);

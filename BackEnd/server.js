@@ -28,6 +28,7 @@ app.use('/admin',admin)
 io.use(wrap(sessionMiddleware));
 io.on('connect',socket=>{
     console.log("connected",socket.request.session)
+    console.log("User Id",socket.request.session.user_id)
 })
 
 

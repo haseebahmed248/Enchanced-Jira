@@ -22,7 +22,9 @@
     "ioredis": "^5.4.1",
     "pg": "^8.11.5",
     "redis": "^4.6.13",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

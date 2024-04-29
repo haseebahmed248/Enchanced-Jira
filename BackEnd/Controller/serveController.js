@@ -22,7 +22,7 @@ const sessionMiddleware = session({
     name: "YUMM_COOKIE",
     cookie: {
         httpOnly: true,
-        // expires: 1000 * 60 * 24 * 7,
+        expires: 1000 * 60 * 24 * 7,
         expires:1000,
         secure: "auto", 
         sameSite: "lax"

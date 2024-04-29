@@ -5,22 +5,17 @@ import {useState, useContext,useEffect} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
 import { AccountContext } from './Components/Security/AccountContext'
+import UseSocket from './Components/UseSocket'
 
 
 function Login() {
-  const [user,setUser] = useContext(AccountContext);
+  const user = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   
-  useEffect(() => {
-    if (user.loggedIn) {
-      navigate('/organizations');
-    }
-  }, [user, navigate]);
   
-
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
@@ -32,7 +27,8 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        setUser({ loggedIn: true });
+        // setUser({ loggedIn: true });
+        user.loggedIn = true;
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -53,9 +49,9 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
       if (response.status === 200) {
-        // user.loggedIn = true;
+        user.loggedIn = true;
         console.log("logged-in")
-        setUser({loggedIn:true});
+        // setUser({loggedIn:true});
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
