@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
-import {useState, useContext} from 'react'
+import {useState} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
 
@@ -64,7 +64,8 @@ function Login() {
       userId.email = response.data[0].email
       console.log(response)
       if (response.status === 200) {
-        user.loggedIn = true;
+        // user.loggedIn = true;
+        
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");

@@ -35,6 +35,7 @@ function App() {
       </UserContextProvider>
 
     </BrowserRouter>
+    </UserProvider>
     
   );
 }
