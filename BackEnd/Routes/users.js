@@ -126,7 +126,7 @@ router
 .get(authLogin.handleLogin)
 .post( async (req, res) => {
     const { email, password } = req.body;
-
+    
     try {
        
         const getUser = await pool.query("SELECT * FROM Users WHERE email=$1", [email]);
