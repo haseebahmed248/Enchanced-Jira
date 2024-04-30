@@ -10,6 +10,7 @@ import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
   const [user,setUser] = useContext(AccountContext);
+  const userId = useContext(UserContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [userID, setUserId] = useState(null);
