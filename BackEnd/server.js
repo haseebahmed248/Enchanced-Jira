@@ -1,4 +1,3 @@
-
 const bodyParser = require('body-parser');
 const express = require('express')
 const cors = require('cors')
@@ -6,44 +5,32 @@ const users = require('./Routes/users')
 const organization = require('./Routes/organization')
 const admin = require('./Routes/admin')
 const dotenv = require('dotenv')
-const session = require('express-session');
-const redis = require('redis')
-const connectRedis = require('connect-redis');
-const { default: RedisStore } = require('connect-redis');
-dotenv.config()
-const PORT = process.env.PORT;
+const {sessionMiddleware,wrap,corsConfig} = require('./Controller/serveController')
 
 const app = express();
-
-app.use(cors({
-    origin:'*'
-}))
-
-
-const redisClient = redis.createClient({
-    port: process.env.REDIS_PORT,
-    host: process.env.REDIS_HOST
+const {Server} = require("socket.io")
+const server = require("http").createServer(app);
+const io = new Server(server,{
+    cors:corsConfig
 })
+dotenv.config()
+const PORT = process.env.PORT;
+app.use(cors(corsConfig))
 
-app.use(session({
-    // store:new RedisStore({client:redisClient}),
-    secret: process.env.SECRET, 
-    resave: false,
-    saveUninitialized: true,
-    name:"YUMM_COOKIE",
-    cookie: {
-        httpOnly: true,
-        expires: 1000 * 60*24*7,
-        secure: "auto", 
-        sameSite: "lax"
-    }
-}));
 
 app.use(bodyParser.json())
+app.use(sessionMiddleware);
+
 app.use('/users',users);
 app.use('/organization',organization)
 app.use('/admin',admin)
 
-app.listen(PORT,()=>{
+io.use(wrap(sessionMiddleware));
+io.on('connect',socket=>{
+    console.log("connected",socket.request.session)
+})
+
+
+server.listen(PORT,()=>{
     console.log(`Servier is Listening to Port ${PORT}`);
 })

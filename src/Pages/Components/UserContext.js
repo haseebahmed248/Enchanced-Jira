@@ -5,7 +5,7 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
   const userId = {email:null};
-
+  
   return (
     <UserContext.Provider value={ userId}>
       {children}

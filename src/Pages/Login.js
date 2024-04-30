@@ -1,7 +1,7 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import {Link, useNavigate} from 'react-router-dom'
 import InputField from './Components/InputField'
-import {useState} from 'react'
+import {useState, useContext,useEffect} from 'react'
 import axios from 'axios'
 import GoogleApi from './Components/GoogleApi';
 
@@ -9,13 +9,19 @@ import UserContext from './Components/UserContext'
 import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
-  const userId = useContext(UserContext)
-  const user = useContext(AccountContext);
+  const [user,setUser] = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [userID, setUserId] = useState(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  
+  useEffect(() => {
+    if (user.loggedIn) {
+      navigate('/organizations');
+    }
+  }, [user, navigate]);
+  
 
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
@@ -23,8 +29,11 @@ function Login() {
     try {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
+      console.log(response)
       if (response.status === 200) {
-        setUserId(response.data.userId); // Store user ID
+        userId.email = response.data.user.email
+        console.log(userId.email)
+        user.loggedIn = true;
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -41,7 +50,7 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        user.loggedIn = true;
+        setUser({ loggedIn: true });
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -61,11 +70,12 @@ function Login() {
       };
       const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
       console.log("Login successful!");
-      userId.email = response.data[0].email
+      userId.email = response.data.data[0].email
       console.log(response)
       if (response.status === 200) {
         // user.loggedIn = true;
-        
+        console.log("logged-in")
+        setUser({loggedIn:true});
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
