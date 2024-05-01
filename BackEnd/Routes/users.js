@@ -4,9 +4,17 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const authLogin = require('../Controller/authLogin')
 const {v4: uuidv4} = require('uuid');
+const jwt = require('jsonwebtoken');
+const dotenv= require('dotenv');
+const jwtSign = require('../Jwt/jwtauth');
+dotenv.config();
 
 // Add middleware to parse JSON bodies
 router.use(express.json());
+
+router.get('/getsession',(req,res)=>{
+    res.send(req.session.user);
+})
 
 router.get('/getUsers', async (req, res) => {
     try {
@@ -69,32 +77,39 @@ router.post('/sign-up', (req, res) => {
 
 router.post("/insertUser", async (req, res) => {
     const { username, email, password, role } = req.body;
-
+    const user_id = uuidv4();
+    
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
         const insertUser = await pool.query(
-            "INSERT INTO Users(username, email, password, role, user_id) VALUES ($1, $2, $3, $4)",
-            [username, email, hashedPassword, role,
-                uuidv4()]
+            "INSERT INTO Users(username, email, password, role, user_id) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+            [username, email, hashedPassword, role, user_id]
         );
-        req.session.user = {
-            username: req.body.username,
-            email: req.body.email,
-            role: req.body.role,
-            userid:insertUser.rows[0].user_id
-        };
-        res.status(200).send("User inserted successfully");
+
+        const getUser = insertUser.rows[0];
+
+        jwtSign({
+            email: getUser.email,
+            username: getUser.username,
+            role: getUser.role,
+            id: getUser.user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token})
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
-       
         if (error.constraint === 'unique_email') {
             res.status(400).send("Error: Email already registered");
         } else {
             console.error("Error inserting user:", error);
-            res.status(500).send("Error inserting user",error);
+            res.status(500).send("Error inserting user");
         }
     }
 });
-
 
 router.post('/insertUserSub', async (req, res) => {
     const { username, email, role, sub } = req.body;
@@ -128,34 +143,28 @@ router
 .get(authLogin.handleLogin)
 .post( async (req, res) => {
     const { email, password } = req.body;
-    
     try {
-       
         const getUser = await pool.query("SELECT * FROM Users WHERE email=$1", [email]);
-        
         if (getUser.rows.length === 0) {
             return res.status(401).send("Invalid email or password");
         }
-
-        
         const validPassword = await bcrypt.compare(password, getUser.rows[0].password);
-        
         if (!validPassword) {
             return res.status(401).send("Invalid email or password");
         }
-        
-       
-        req.session.user = {
-            id: getUser.rows[0].u_id,
+        jwtSign({
             email: getUser.rows[0].email,
             username: getUser.rows[0].username,
             role: getUser.rows[0].role,
-            user_id:getUser.rows[0].user_id
-        };
-        
-       
-        res.status(200).json({message:"Logged-In",
-    loggedIn:true});
+            id:getUser.rows[0].user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token})
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).json({message:"Error Logging-In",
