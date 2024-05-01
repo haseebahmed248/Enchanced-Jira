@@ -1,14 +1,14 @@
-import React, { createContext } from 'react';
-import { useState,useEffect } from 'react';
+import React, { createContext, useState } from 'react';
+
 export const AccountContext = createContext();
-
 const UserContextProvider = ({ children }) => {
-    const user = { loggedIn: null };
+    const [user, setUser] = useState({ 
+        loggedIn: null,
+        token: localStorage.getItem('token'),
+    });
     
-    
-
     return (
-        <AccountContext.Provider value={ user }>
+        <AccountContext.Provider value={ {user,setUser} }>
             {children}
         </AccountContext.Provider>
     );

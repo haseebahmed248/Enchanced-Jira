@@ -1,19 +1,20 @@
-const { useEffect, useContext } = require("react")
 import { AccountContext } from "./Security/AccountContext";
-import Socket from "./Socket";
+const { useEffect, useContext } = require("react")
 
-const UseSocket = ()=>{
-    const user = useContext(AccountContext)
+
+
+const UseSocket = (socket)=>{
+    const {user,setUser} = useContext(AccountContext)
     useEffect(()=>{
-        Socket.connect();
-        Socket.on("connect_error",()=>{
-            user.loggedIn = false;
+        socket.connect();
+        console.log(socket);
+        socket.on("connect_error",()=>{
+            setUser({loggedIn: false})
         })
         return ()=>{
-            //for cleaning
-            Socket.off('connect_error');
+            socket.off('connect_error');
         }
-    },[user]);
+    },[user,socket]);
 }
 
 export default UseSocket;

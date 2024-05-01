@@ -9,15 +9,14 @@ import UserContext from './Components/UserContext'
 import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
-  const user = useContext(AccountContext);
   const userId = useContext(UserContext);
+  const {user,setUser} = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
   const [userID, setUserId] = useState(null);
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   
-
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
@@ -45,7 +44,7 @@ function Login() {
       const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
-        user.loggedIn = true;
+        setUser({loggedIn: true});
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -68,8 +67,11 @@ function Login() {
       userId.email = response.data.data[0].email
       console.log(response)
       if (response.status === 200) {
-        user.loggedIn = true;
+        setUser({loggedIn: true, token: response.data.token});
         console.log("logged-in")
+        localStorage.setItem('token', response.data.token);
+        console.log("my response token: "+response.data.token);
+        console.log("user set token: "+ user.token);
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
