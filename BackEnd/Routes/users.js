@@ -203,7 +203,7 @@ router
             id:getUser.rows[0].user_id
         },process.env.SECRET,{expiresIn:'1min'})
         .then(token=>{
-            res.json({loggedIn:true,token})
+            res.json({loggedIn:true,token,data:getUser.rows})
         })
         .catch(err=>{
             console.log(err);

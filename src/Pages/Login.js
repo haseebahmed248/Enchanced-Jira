@@ -9,6 +9,7 @@ import UserContext from './Components/UserContext'
 import { AccountContext } from './Components/Security/AccountContext'
 
 function Login() {
+  const userId = useContext(UserContext);
   const {user,setUser} = useContext(AccountContext);
   const navigate = useNavigate()
   const [email, setEmail] = useState('');
