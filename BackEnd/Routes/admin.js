@@ -27,7 +27,7 @@ router.post("/adminLogin", async (req, res) => {
             role: getUser.rows[0].role,
         };
         
-        res.status(200).send("Logged-In");
+        res.status(200).send({loggedIn:true,message:"Logged-In"});
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).send("Error logging in");

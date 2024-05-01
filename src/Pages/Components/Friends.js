@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import CardMedia from '@mui/material/CardMedia';
 import '../CSS/Friends.css';
+import PropTypes from 'prop-types';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -17,9 +18,16 @@ const Item = styled(Paper)(({ theme }) => ({
     alignItems: 'center',
 }));
 
-export default function Friends({ image, alt, username }) {
+Friends.propTypes = {
+    image: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
+    onClick: PropTypes.func.isRequired,
+  };
+  
+
+export default function Friends({ image, alt, username,onClick }) {
     return (
-        <Card sx={{ marginBottom: '10px', cursor: 'pointer' }}>
+        <Card sx={{ marginBottom: '10px', cursor: 'pointer' }} onClick={onClick}>
             <Item>
                 <CardMedia
                     component="img"
