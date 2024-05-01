@@ -130,23 +130,23 @@ router.get("/organization-details/:org_id", async (req, res) => {
     const { org_id } = req.params;
   
     try {
-      const result = await pool.query(
-        `
-        SELECT
-          o.title AS organization_name,
-          COUNT(uo.u_org_id) AS number_of_users,
-          ARRAY_AGG(u.username) AS users
-        FROM
-          usr_org uo
-          INNER JOIN organizations o ON uo.org_id = o.org_id
-          INNER JOIN users u ON uo.u_id = u.u_id
-        WHERE
-          o.org_id = $1
-        GROUP BY
-          o.title
-        `,
-        [org_id]
-      );
+        const result = await pool.query(
+            `
+            SELECT
+              o.title AS organization_name,
+              COUNT(uo.u_org_id) AS number_of_users,
+              ARRAY_AGG(json_build_object('username', u.username, 'id', u.u_id)) AS users
+            FROM
+              usr_org uo
+              INNER JOIN organizations o ON uo.org_id = o.org_id
+              INNER JOIN users u ON uo.u_id = u.u_id
+            WHERE
+              o.org_id = $1
+            GROUP BY
+              o.title
+            `,
+            [org_id]
+          );
   
       if (result.rows.length === 0) {
         res.status(404).send("Organization not found.");
@@ -192,7 +192,7 @@ router.get("/organization-details/:org_id", async (req, res) => {
  
 
 // DELETE endpoint for deleting a user from a specific organization
-router.delete('/organization/:orgId/user/:userId', async (req, res) => {
+router.delete('/deleteUser/:orgId/user/:userId', async (req, res) => {
     const { orgId, userId } = req.params; // Extract parameters from the URL
 
     if (!orgId || !userId) {
