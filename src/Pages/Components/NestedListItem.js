@@ -6,15 +6,17 @@ import ListItemText from '@mui/material/ListItemText';
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
 
-export default function NestedListItem({ primary, image, alt }) {
+export default function NestedListItem({ primary, image, alt, onClick }) {
   const [open, setOpen] = React.useState(true);
 
   const handleClick = () => {
     setOpen(!open);
+    onClick(); // Call the onClick handler when the plus icon is clicked
   };
+
   return (
     <div>
-      <ListItemButton onClick={handleClick} style={{width:'120%'}}>
+      <ListItemButton onClick={handleClick} style={{ width: '120%' }}>
         <ListItemAvatar>
           <Avatar alt={alt} src={image} />
         </ListItemAvatar>

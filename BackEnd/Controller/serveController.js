@@ -1,21 +1,21 @@
 const session = require('express-session');
-const redis = require('redis');
-const RedisStore = require('connect-redis').default;
-const {createClient}= require('redis');
-const client = redis.createClient();
+// const redis = require('redis');
+// const RedisStore = require('connect-redis').default;
+// const {createClient}= require('redis');
+//const client = redis.createClient();
 const dotenv = require('dotenv');
 dotenv.config();
 
-let redisClient = createClient();
-redisClient.connect().catch(console.error);
+// let redisClient = createClient();
+// redisClient.connect().catch(console.error);
 
-let redisStore = new RedisStore({ 
-    client: redisClient,
-    prefix:"myapp:",
- });
+// let redisStore = new RedisStore({ 
+//     client: redisClient,
+//     prefix:"myapp:",
+//  });
 
 const sessionMiddleware = session({
-    store: redisStore,
+  //  store: redisStore,
     secret: process.env.SECRET, 
     resave: false,
     saveUninitialized: true,
