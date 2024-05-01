@@ -20,12 +20,12 @@ router.post("/adminLogin", async (req, res) => {
         }
 
        
-        req.session.user = {
-            id: getUser.rows[0].id,
-            username: getUser.rows[0].username,
-            email: getUser.rows[0].email,
-            role: getUser.rows[0].role,
-        };
+        // req.session.user = {
+        //     id: getUser.rows[0].id,
+        //     username: getUser.rows[0].username,
+        //     email: getUser.rows[0].email,
+        //     role: getUser.rows[0].role,
+        // };
         
         res.status(200).send({loggedIn:true,message:"Logged-In"});
     } catch (error) {

@@ -1,18 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import UserContext from './UserContext';
-
 import { useNavigate } from 'react-router-dom';
-import { Card, CardActionArea, CardActions, CardContent, CardMedia, Typography, Button } from '@mui/material';
-import { blueGrey } from '@mui/material/colors';
-import { styled } from '@mui/material/styles';
-
-const ColorButton = styled(Button)(({ theme }) => ({
-  color: theme.palette.getContrastText(blueGrey[500]),
-  backgroundColor: blueGrey[900],
-  '&:hover': {
-    backgroundColor: blueGrey[700],
-  },
-}));
+import { Card, CardActionArea, CardContent, CardMedia, Typography, Grid } from '@mui/material';
 
 function OrgCard({ organizations }) {
   const userId = useContext(UserContext);
@@ -27,6 +16,7 @@ function OrgCard({ organizations }) {
         if (response.ok) {
           const data = await response.json();
           setUserOrganizations(data);
+          console.log(organizations)
         } else {
           console.error('Error fetching user organizations:', response.statusText);
         }
@@ -46,41 +36,67 @@ function OrgCard({ organizations }) {
   }
 
   return (
-    <div style={{ display: 'flex', flexWrap: 'wrap', borderRadius: '8px' }}>
+    <div style={{ 
+      display: 'flex', 
+      flexWrap: 'wrap', 
+      justifyContent: 'center', 
+      alignItems: 'center', 
+      borderRadius: '8px', 
+      width:'80%', 
+      margin: '0 auto', 
+    }}>
       {userOrganizations.length > 0 ? (
         userOrganizations.map((organization) => (
-          <Card sx={{ width: '47%', margin: '10px' }} key={organization.org_id}>
-            <CardActionArea>
-              <CardMedia
-                component="img"
-                sx={{
-                  height: 120, // Reduced height to ensure more space for content
-                  objectFit: 'cover',
-                }}
-                image={organization.image_url}
-                
-                alt={organization.title}
-              />
-            
-              <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
-                  {organization.title}
-                </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'start' }}>
-                  {organization.description}
-                </Typography>
-              </CardContent>
+          <Card 
+              sx={{ 
+                width: '100%', 
+                margin: '10px', 
+                position: 'relative', 
+                overflow: 'hidden', 
+                '&:hover::after': {
+                  transform: 'scaleX(1)'
+                },
+                '&::after': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  right: 0,
+                  bottom: 0,
+                  left: '88%',
+                  background: '#3D52A0',
+                  transform: 'scaleX(0)',
+                  transformOrigin: 'right',
+                  transition: 'transform 0.3s ease-in-out',
+                  borderRadius: '8px'
+                }
+              }} 
+              key={organization.org_id}
+            >
+            <CardActionArea onClick={()=> orgSubmit(organization.org_id)}>
+              <Grid container>
+                <Grid item xs={3}>
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      height: 120,
+                      objectFit: 'cover',
+                    }}
+                    image={organization.image_url}
+                    alt={organization.title}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <CardContent>
+                    <Typography gutterBottom variant="h5" component="div" sx={{fontWeight:'bold', color:' #3D52A0'}}>
+                      {organization.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'start' }}>
+                      {organization.description ? organization.description.substring(0, 2) : 'No description available'}
+                    </Typography>
+                  </CardContent>
+                </Grid>
+              </Grid>
             </CardActionArea>
-            <CardActions>
-              <div style={{ marginRight: 'auto' }}>
-                <ColorButton
-                  variant="contained"
-                  onClick={() => orgSubmit(organization.org_id)}
-                >
-                  Select
-                </ColorButton>
-              </div>
-            </CardActions>
           </Card>
         ))
       ) : (

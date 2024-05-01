@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 import { AccountContext } from './Components/Security/AccountContext';
 
 function AdminLogin() {
-  const user = useContext(AccountContext);
+  const {user,setUser} = useContext(AccountContext);
   // const test = useContext(AccountContext)
   const Navigate = useNavigate();
   const [username, setUsername] = useState('');
@@ -23,7 +23,7 @@ function AdminLogin() {
         password: password
       };
       await axios.post('http://localhost:4000/admin/adminLogin', loginData);
-      user.loggedIn = true;
+      setUser({loggedIn: true, username: username});
       Navigate('/admin/Dashboard')
     } catch (error) {
       console.error("Error Login up:", error);
