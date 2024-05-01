@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import UserContext from './UserContext';
+
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardActions, CardContent, CardMedia, Typography, Button } from '@mui/material';
 import { blueGrey } from '@mui/material/colors';
@@ -52,14 +53,17 @@ function OrgCard({ organizations }) {
             <CardActionArea>
               <CardMedia
                 component="img"
-                height="140"
+                sx={{
+                  height: 120, // Reduced height to ensure more space for content
+                  objectFit: 'cover',
+                }}
                 image={organization.image_url}
                 
                 alt={organization.title}
               />
             
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div" >
+                <Typography gutterBottom variant="h5" component="div">
                   {organization.title}
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'start' }}>
@@ -69,7 +73,10 @@ function OrgCard({ organizations }) {
             </CardActionArea>
             <CardActions>
               <div style={{ marginRight: 'auto' }}>
-                <ColorButton variant="contained" onClick={() => orgSubmit(organization.org_id)}>
+                <ColorButton
+                  variant="contained"
+                  onClick={() => orgSubmit(organization.org_id)}
+                >
                   Select
                 </ColorButton>
               </div>
@@ -77,7 +84,7 @@ function OrgCard({ organizations }) {
           </Card>
         ))
       ) : (
-        <h3>Join new Groups</h3>
+        <Typography variant="h5">Join new Groups</Typography>
       )}
     </div>
   );

@@ -1,3 +1,6 @@
+  
+const upload = require("./Routes/upload");  
+const path = require("path");
 const bodyParser = require('body-parser');
 const express = require('express')
 const cors = require('cors')
@@ -21,9 +24,12 @@ const PORT = process.env.PORT;
 app.use(cors(corsConfig))
 app.use(bodyParser.json())
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
+
 app.use('/users',users);
 app.use('/organization',organization)
 app.use('/admin',admin)
+app.use("/upload", upload);
 
 io.use((socket, next) => {
     if (socket.handshake.auth && socket.handshake.auth.token){
