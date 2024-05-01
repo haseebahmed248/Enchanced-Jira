@@ -1,11 +1,36 @@
-import * as React from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import NestedListItem from './NestedListItem';
-import DraftsIcon from '@mui/icons-material/Drafts';
-import SendIcon from '@mui/icons-material/Send';
 import List from '@mui/material/List';
 import { ListSubheader } from '@mui/material';
+import axios from 'axios';
+import UserContext from './UserContext';
 
 export default function NestedList() {
+  const userId = useContext(UserContext); 
+  const [unassociatedOrganizations, setUnassociatedOrganizations] = useState([]);
+
+  useEffect(() => {
+    const fetchUnassociatedOrganizations = async () => {
+      try {
+        const response = await axios.get(`http://localhost:4000/users/getUnassociatedOrganizationsByEmail/${userId.email}`);
+        setUnassociatedOrganizations(response.data);
+      } catch (error) {
+        console.error('Error fetching unassociated organizations:', error);
+      }
+    };
+
+    fetchUnassociatedOrganizations();
+  }, [userId]);
+  const handleAddUserToOrganization = async (org_id) => {
+    try {
+      await axios.post(`http://localhost:4000/users/addUserInOrganizationByEmail/${org_id}`, { email: userId.email });
+      alert('User added to organization successfully');
+    } catch (error) {
+      console.error('Error adding user to organization:', error);
+      alert('Error adding user to organization');
+    }
+  };
+  
   return (
     <List
       sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
@@ -17,9 +42,14 @@ export default function NestedList() {
         </ListSubheader>
       }
     >
-      <NestedListItem primary="Data" image="" alt={"hello"} />
-      <NestedListItem primary="Drafts" icon={<DraftsIcon />}  />
-      <NestedListItem primary="Sent" icon={<SendIcon />}  />
+      {unassociatedOrganizations.map((organization) => (
+        <NestedListItem
+          key={organization.org_id}
+          primary={organization.title}
+          image={organization.image_url}
+          onClick={() => handleAddUserToOrganization(organization.org_id)}
+        />
+      ))}
     </List>
   );
 }

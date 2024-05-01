@@ -17,7 +17,6 @@ function Login() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   
-  
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
