@@ -11,6 +11,7 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import Jira from '../Assets/Logo/Jira.png'
 import './CSS/Organizations.css'
+import Box from '@mui/material/Box';
 
 const ORG_URI = "http://localhost:4000/organization/all";
 
@@ -35,17 +36,19 @@ export default function Organizations() {
   
   return (
     <div className='orgContainer'>
-      <AppBar position="static" style={{ backgroundColor: '#3D52A0  ' }}>
-        <Toolbar elevation={0}>
-          <IconButton edge="start" color="inherit" aria-label="logo">
-            <img src={Jira} alt="logo" /> 
-          </IconButton>
-          <Typography variant="h6" style={{ flexGrow: 1, fontSize: '30px', color: 'white', marginTop:'10px' }}> {/* Adjusted fontSize and color */}
-            Enhanced Jira
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Item sx={{ height:'98%' }}>
+      <Box sx={{  }}>
+        <AppBar position="static" style={{ backgroundColor: '#3D52A0', position:'absolute',width: '20%', borderTopRightRadius: '50px', borderBottomRightRadius: '50px', overflow: 'hidden' }}>
+          <Toolbar elevation={0}>
+            <IconButton edge="start" color="inherit" aria-label="logo">
+              <img src={Jira} alt="logo" /> 
+            </IconButton>
+            <Typography variant="h6" style={{ flexGrow: 1, fontSize: '30px', color: 'white', marginTop:'10px' }}> {/* Adjusted fontSize and color */}
+              Enhanced Jira
+            </Typography>
+          </Toolbar>
+        </AppBar>
+      </Box>
+      <Item sx={{ height:'100%',backgroundColor:'#E2F0F9' }}>
         <Grid container spacing={2}>
           <Grid item xs={12} style={{marginLeft:'6%', marginTop:'25px'}}>
             <h2 style={{fontSize:'30px'}}> Avaliable Organizations</h2>

@@ -51,6 +51,7 @@ function OrgCard({ organizations }) {
               sx={{ 
                 width: '100%', 
                 margin: '10px', 
+                borderRadius: '8px',
                 position: 'relative', 
                 overflow: 'hidden', 
                 '&:hover::after': {
@@ -72,7 +73,7 @@ function OrgCard({ organizations }) {
               }} 
               key={organization.org_id}
             >
-            <CardActionArea onClick={()=> orgSubmit(organization.org_id)}>
+            <CardActionArea onClick={()=> orgSubmit(organization.org_id)} >
               <Grid container>
                 <Grid item xs={3}>
                   <CardMedia
