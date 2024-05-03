@@ -562,7 +562,7 @@ const OrganizationManager = () => {
   const fetchOrganizations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:4000/organization/organizations');
+      const response = await fetch('http://localhost:4003/organization/organizations');
       if (response.ok) {
         const data = await response.json();
         setOrganizations(data);
@@ -582,7 +582,7 @@ const OrganizationManager = () => {
     setErrorMessage('');
     try {
       const response = await fetch(
-        `http://localhost:4000/organization/organization-details/${orgId}`
+        `http://localhost:4001/organization/organization-details/${orgId}`
       );
       if (response.ok) {
         const data = await response.json();
@@ -624,7 +624,7 @@ const OrganizationManager = () => {
     for (const userId of selectedUserIds) {
       try {
         const response = await fetch(
-          `http://localhost:4000/organization/deleteUser/${orgId}/user/${userId}`,
+          `http://localhost:4001/organization/deleteUser/${orgId}/user/${userId}`,
           {
             method: 'DELETE',
             headers: {

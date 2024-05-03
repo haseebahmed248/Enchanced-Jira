@@ -343,18 +343,18 @@ router.post('/checkLoginSub', async (req, res) => {
         const user = getUser.rows[0];
 
        
-        req.session.user = {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role,
-            sub: user.sub
-        };
+        // req.session.user = {
+        //     id: user.id,
+        //     username: user.username,
+        //     email: user.email,
+        //     role: user.role,
+        //     sub: user.sub
+        // };
 
      
         res.status(200).send({
             message: "Logged in successfully",
-            user: req.session.user
+            data:user.email
         });
     } catch (error) {
         console.error("Error during login:", error);

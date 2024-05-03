@@ -122,7 +122,7 @@ function SignUp() {
       };
 
       const response = await axios.post(
-        "http://localhost:4000/users/insertUserSub",
+        "http://localhost:4003/users/insertUserSub",
         signupData
       );
 
@@ -150,7 +150,7 @@ function SignUp() {
         role: "User"
       };
       console.log(signupData)
-      const response = await axios.post('http://localhost:4000/users/insertUser', signupData);
+      const response = await axios.post('http://localhost:4003/users/insertUser', signupData);
       console.log("Signup successful!", response);
       
 

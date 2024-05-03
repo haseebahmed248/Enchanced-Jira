@@ -129,7 +129,7 @@ export default function Table() {
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    axios.get("http://localhost:4000/users/getUsers").then((res) => {
+    axios.get("http://localhost:4003/users/getUsers").then((res) => {
       setUsersData(res.data);
     });
   }, []);
@@ -195,7 +195,7 @@ export default function Table() {
 
   const handleDeleteButtonClick = (userId) => {
     axios
-      .delete(`http://localhost:4000/users/deleteUser/${userId}`)
+      .delete(`http://localhost:4003/users/deleteUser/${userId}`)
       .then(() => {
         setUsersData(usersData.filter((user) => user.u_id !== userId));
       })

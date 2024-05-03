@@ -12,7 +12,7 @@ export default function NestedList() {
   useEffect(() => {
     const fetchUnassociatedOrganizations = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/users/getUnassociatedOrganizationsByEmail/${userId.email}`);
+        const response = await axios.get(`http://localhost:4003/users/getUnassociatedOrganizationsByEmail/${userId.email}`);
         setUnassociatedOrganizations(response.data);
       } catch (error) {
         console.error('Error fetching unassociated organizations:', error);
@@ -23,7 +23,7 @@ export default function NestedList() {
   }, [userId]);
   const handleAddUserToOrganization = async (org_id) => {
     try {
-      await axios.post(`http://localhost:4000/users/addUserInOrganizationByEmail/${org_id}`, { email: userId.email });
+      await axios.post(`http://localhost:4003/users/addUserInOrganizationByEmail/${org_id}`, { email: userId.email });
       alert('User added to organization successfully');
     } catch (error) {
       console.error('Error adding user to organization:', error);

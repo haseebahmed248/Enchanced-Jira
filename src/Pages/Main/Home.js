@@ -23,7 +23,7 @@ export default function Home(){
     );
 
     useEffect(() => {
-        fetch('http://localhost:4000/users/getUsers')
+        fetch('http://localhost:4003/users/getUsers')
             .then(response => response.json())
             .then(data => {
                 console.log(data)

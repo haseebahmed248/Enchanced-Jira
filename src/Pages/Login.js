@@ -21,13 +21,13 @@ function Login() {
     setEmail(email);
     console.log(sub)
     try {
-      const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
+      const response = await axios.post('http://localhost:4003/users/checkLoginSub', { sub });
       console.log(sub);
       console.log(response)
       if (response.status === 200) {
-        userId.email = response.data.user.email
+        userId.email = response.data.email
         console.log(userId.email)
-        user.loggedIn = true;
+        setUser({loggedIn: true});
         navigate('/organizations');
       } else {
         setErrorMessage("An error occurred during Login");
@@ -41,7 +41,7 @@ function Login() {
 
   const handleGoogleSubmit = async ({ sub }) => {
     try {
-      const response = await axios.post('http://localhost:4000/users/checkLoginSub', { sub });
+      const response = await axios.post('http://localhost:4003/users/checkLoginSub', { sub });
       console.log(sub);
       if (response.status === 200) {
         setUser({loggedIn: true});
@@ -62,7 +62,7 @@ function Login() {
         email: email,
         password: password
       };
-      const response = await axios.post('http://localhost:4000/users/checkLogin', loginData);
+      const response = await axios.post('http://localhost:4003/users/checkLogin', loginData);
       console.log("Login successful!");
       userId.email = response.data.data[0].email
       console.log(response)
