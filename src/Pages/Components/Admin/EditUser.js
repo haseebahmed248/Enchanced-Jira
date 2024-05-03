@@ -117,7 +117,7 @@ const EditUserDialog = ({ open, handleClose, userId, username, email, password, 
   }, [open, userId, username, email, password, role, sub]);
 
   const handleEditUser = () => {
-    axios.put(`http://localhost:4000/users/updateUser/${updatedUserId}`, {
+    axios.put(`http://localhost:4003/users/updateUser/${updatedUserId}`, {
       username: updatedUsername,
       email: updatedEmail,
       password: updatedPassword,

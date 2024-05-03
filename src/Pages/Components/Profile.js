@@ -30,7 +30,7 @@ function ProfileComponent({ onClose }) {
 
   const getUserByEmail = async (email) => {
     try {
-      const response = await axios.get(`http://localhost:4000/users/getUserByEmail/${userId.email}`);
+      const response = await axios.get(`http://localhost:4003/users/getUserByEmail/${userId.email}`);
       const { username, email, password,role,sub } = response.data;
       console.log("res",response)
       setUserData({ username, email, password, role,sub });
@@ -70,7 +70,7 @@ function ProfileComponent({ onClose }) {
 
   }
   console.log("body",body)
-      const response = await axios.put(`http://localhost:4000/users/updateUser/${userId.email}`,body );
+      const response = await axios.put(`http://localhost:4003/users/updateUser/${userId.email}`,body );
   
       console.log('User updated successfully');
     } catch (error) {

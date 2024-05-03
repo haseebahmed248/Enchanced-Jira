@@ -12,7 +12,7 @@ function OrgCard({ organizations }) {
     // Fetch organizations of the current user
     const fetchUserOrganizations = async () => {
       try {
-        const response = await fetch(`http://localhost:4000/users/getOrganizationsOfUserByEmail/${userId.email}`);
+        const response = await fetch(`http://localhost:4003/users/getOrganizationsOfUserByEmail/${userId.email}`);
         if (response.ok) {
           const data = await response.json();
           setUserOrganizations(data);

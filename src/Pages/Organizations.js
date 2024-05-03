@@ -13,7 +13,7 @@ import Jira from '../Assets/Logo/Jira.png'
 import './CSS/Organizations.css'
 import Box from '@mui/material/Box';
 
-const ORG_URI = "http://localhost:4000/organization/all";
+const ORG_URI = "http://localhost:4001/organization/all";
 
 export default function Organizations() {
   const [organizations, setOrganizations] = useState([]);

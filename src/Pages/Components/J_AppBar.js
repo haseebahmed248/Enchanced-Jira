@@ -220,7 +220,7 @@ function J_AppBar() {
 
   const handleLogout = async () => {
     try {
-        await axios.post(`http://localhost:4000/users/logout/${userId}`);
+        await axios.post(`http://localhost:4003/users/logout/${userId}`);
         // Redirect the user to the login page or do any other necessary actions
     } catch (error) {
         console.error("Error logging out:", error);

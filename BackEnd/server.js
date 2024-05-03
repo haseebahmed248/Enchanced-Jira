@@ -24,7 +24,7 @@ const PORT = process.env.PORT;
 app.use(cors(corsConfig))
 app.use(bodyParser.json())
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
+// app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
 app.use('/users',users);
 app.use('/organization',organization)
