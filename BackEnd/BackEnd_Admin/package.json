@@ -17,11 +17,8 @@
     "cors": "^2.8.5",
     "env": "^0.0.2",
     "express": "^4.19.2",
-    "ioredis": "^4.28.2",
     "jsonwebtoken": "^9.0.2",
     "pg": "^8.11.5",
-    "redis": "^4.6.13",
-    "socket.io": "^4.4.0",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
