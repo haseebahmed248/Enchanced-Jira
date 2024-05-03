@@ -3,9 +3,6 @@ h3{
     margin-left: 10px;
     padding: 1%;
 }
-img{
-    border-radius: 50%;
-}
 .username {
     white-space: nowrap;
     overflow: hidden;
