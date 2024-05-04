@@ -8,14 +8,16 @@ function GoogleApi(props) {
   };
 
   return (
-    <GoogleLogin 
-      onSuccess={(res) => {
-        const decoded = jwtDecode(res?.credential);
-        const { name, email, sub } = decoded;
-        props.handleGoogleSuccess({ username: name, email: email, sub: sub });
-      }} 
-      onError={errorMessage_API} 
-    />
+    <div style={{marginTop: "4%"}}>
+      <GoogleLogin 
+        onSuccess={(res) => {
+          const decoded = jwtDecode(res?.credential);
+          const { name, email, sub } = decoded;
+          props.handleGoogleSuccess({ username: name, email: email, sub: sub });
+        }} 
+        onError={errorMessage_API}
+      />
+    </div>
   );
 }
 
