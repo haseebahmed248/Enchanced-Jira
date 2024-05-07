@@ -17,7 +17,7 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
-export default function Sidebar() {
+export default function Sidebar({ organizationId }) {
   const [selectedItem, setSelectedItem] = useState("Projects");
   const [open, setOpen] = useState(false); 
   const [friendName, setFriendName] = useState(""); 
