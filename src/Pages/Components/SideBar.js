@@ -11,7 +11,6 @@ import { MessageContext } from '../../App';
 import axios from 'axios';
 import TaskData from './Tasks'; 
 
-
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
   ...theme.typography.body2,
@@ -21,7 +20,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Sidebar() {
-  
+  const {selectedOrgId,setSelectedOrgId} = useContext(AccountContext)
   const {friends,setFriends} = useContext(AccountContext);
   const [selectedItem, setSelectedItem] = useState("Projects");
   const [open, setOpen] = useState(false); // State for opening message panel
@@ -49,8 +48,9 @@ export default function Sidebar() {
     }
   };
   
-
+  
   const handleItemClick = (item) => {
+    
     setSelectedItem(item);
   };
   const handleListItemClick = (task_name)=>{
@@ -70,6 +70,11 @@ export default function Sidebar() {
     console.log("Friends are: ", friends);
     setOpen(true);
   };
+
+  const handleCloseTaskData = () => {
+    setSelectedTask(null); // Reset selected task when closing TaskData
+  };
+
 
   return (
     <Grid container sx={{ height: "91.3%" }}>

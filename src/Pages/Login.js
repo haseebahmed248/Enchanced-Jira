@@ -68,7 +68,7 @@ function Login() {
     setEmail(email);
     console.log(sub)
     try {
-      const response = await axios.post('http://localhost:4003/users/checkLoginSub', { sub });
+      const response = await axios.post('/users/checkLoginSub', { sub });
       console.log(sub);
       console.log(response)
       if (response.status === 200) {
@@ -96,7 +96,7 @@ function Login() {
         email: email,
         password: password
       };
-      const response = await axios.post('http://localhost:4003/users/checkLogin', loginData);
+      const response = await axios.post('/users/checkLogin', loginData);
       console.log("Login successful!");
       setCurrentUser({email: response.data.data[0].email,id: response.data.data[0].id,
         username: response.data.data[0].username,image_url: response.data.data[0].image_url,

@@ -82,7 +82,7 @@ function SignUp() {
       };
 
       const response = await axios.post(
-        "http://localhost:4003/users/insertUserSub",
+        "/users/insertUserSub",
         signupData
       );
 
@@ -111,7 +111,7 @@ function SignUp() {
         role: "User"
       };
       console.log(signupData)
-      const response = await axios.post('http://localhost:4003/users/insertUser', signupData);
+      const response = await axios.post('/users/insertUser', signupData);
       console.log("Signup successful!", response);
       
 

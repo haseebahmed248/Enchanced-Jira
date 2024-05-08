@@ -27,6 +27,7 @@ const userSockets = {};  //change this
 app.use('/users',users);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+
 io.use((socket, next) => {
     if (socket.handshake.auth && socket.handshake.auth.token){
         jwt.verify(socket.handshake.auth.token, process.env.SECRET, function(err, decoded) {

@@ -71,7 +71,6 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
       >
         Add Task
       </Button>
-      
       {showAddTask && (
         <Addtask
           onClose={() => setShowAddTask(false)}

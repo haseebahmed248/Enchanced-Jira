@@ -37,7 +37,7 @@ function OrgCard({ organizations }) {
     setOrgID(orgId);
     console.log("Id is now: ",orgID);
     console.log(orgId);
-    Navigate('/organizations/Home');
+    Navigate('/organizations/Home', { state: { orgId } });
   }
 
   return (
@@ -78,7 +78,7 @@ function OrgCard({ organizations }) {
               }} 
               key={organization.org_id}
             >
-            <CardActionArea onClick={()=> orgSubmit(organization.org_id)} >
+            <CardActionArea  onClick={() => orgSubmit(organization.org_id)} >
               <Grid container>
                 <Grid item xs={3}>
                   <CardMedia

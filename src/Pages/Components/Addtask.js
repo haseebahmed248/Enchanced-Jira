@@ -6,6 +6,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import UserContext from './UserContext';
 import { MessageContext } from '../../App';
 
+
 const AddTaskComponent = ({ onClose }) => {
   const [taskName, setTaskName] = useState('');
   const [taskDesc, setTaskDesc] = useState('');
@@ -13,7 +14,6 @@ const AddTaskComponent = ({ onClose }) => {
   const [selectedUser, setSelectedUser] = useState(null); // Use null for better control
   // const { org_id } = useContext(UserContext); // Access org_id from UserContext
   const {orgID} = useContext(MessageContext);
-  
 
   useEffect(() => {
     fetchUsers();
