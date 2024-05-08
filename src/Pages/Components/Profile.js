@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useContext } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -12,28 +11,26 @@ import axios from 'axios';
 import UserContext from './UserContext';
 
 function ProfileComponent({ onClose }) {
-  const userId = useContext(UserContext); // Accessing email from UserContext
+  const userId = useContext(UserContext);
   const [showPassword, setShowPassword] = useState(false);
   const [userData, setUserData] = useState({
     username: '',
     email: '',
     password: '',
     image: null,
-    sub:'',
-    role:''
+    sub: '',
+    role: ''
   });
 
   useEffect(() => {
-   
-    getUserByEmail()
+    getUserByEmail();
   }, []);
 
-  const getUserByEmail = async (email) => {
+  const getUserByEmail = async () => {
     try {
-      const response = await axios.get(`http://localhost:4003/users/getUserByEmail/${userId.email}`);
-      const { username, email, password,role,sub } = response.data;
-      console.log("res",response)
-      setUserData({ username, email, password, role,sub });
+      const response = await axios.get(`http://localhost:4000/users/getUserByEmail/${userId.email}`);
+      const { username, email, password, role, sub } = response.data;
+      setUserData({ username, email, password, role, sub });
     } catch (error) {
       console.error('Error fetching user data:', error);
     }
@@ -60,66 +57,80 @@ function ProfileComponent({ onClose }) {
       formData.append('email', userData.email);
       formData.append('password', userData.password);
       formData.append('image', userData.image);
-  //http://localhost:4000/users/updateUser/aimannn@gmail.com
-  const body={
-    username:userData.username,
-    email:userData.email,
-    password:userData.password,
-    role:userData.role,
-    sub:userData.sub,
 
-  }
-  console.log("body",body)
-      const response = await axios.put(`http://localhost:4003/users/updateUser/${userId.email}`,body );
-  
+      const response = await axios.put(`http://localhost:4000/users/updateUser/${userId.email}`, formData);
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
     }
   };
-  
+
   return (
     <Box
       sx={{
         position: 'absolute',
-        top: 'calc(50% - 300px)',
-        bottom: 'calc(50% - 300px)',
-        right: '20px',
-        width: 'calc(100% - 40px)',
-        maxWidth: '1400px',
-        maxHeight: '600px',
-        backgroundColor: 'white',
-        padding: '20px',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80%',
+        maxWidth: '500px',
+        p: 4,
         borderRadius: '8px',
+        backgroundColor: '#fff',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-        zIndex:10
       }}
     >
-      <IconButton onClick={onClose} sx={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
+      <IconButton onClick={onClose} sx={{ position: 'absolute', top: '8px', right: '8px', color: '#666' }}>
         <CloseIcon />
       </IconButton>
 
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h5" align="center" gutterBottom>
         Profile
       </Typography>
 
-      <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'lightgray', marginBottom: '20px' }}>
+      <Box
+        sx={{
+          width: '100px',
+          height: '100px',
+          borderRadius: '50%',
+          backgroundColor: '#e3f2fd',
+          margin: '0 auto 20px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          overflow: 'hidden',
+        }}
+      >
         {userData.image ? (
           <img src={URL.createObjectURL(userData.image)} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
         ) : (
           <Typography variant="body1" textAlign="center" style={{ lineHeight: '100px' }}>Upload Image</Typography>
         )}
-      </div>
+      </Box>
 
       <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="image-input" />
       <label htmlFor="image-input">
-        <Button variant="outlined" component="span">
+        <Button variant="outlined" component="span" fullWidth sx={{ mb: 2 }}>
           Choose Image
         </Button>
       </label>
 
-      <TextField name="username" label="Username" value={userData.username} onChange={handleInputChange} fullWidth margin="normal" />
-      <TextField name="email" label="Email" value={userData.email} onChange={handleInputChange} fullWidth margin="normal" />
+      <TextField
+        name="username"
+        label="Username"
+        value={userData.username}
+        onChange={handleInputChange}
+        fullWidth
+        margin="normal"
+      />
+      <TextField
+        name="email"
+        label="Email"
+        value={userData.email}
+        onChange={handleInputChange}
+        fullWidth
+        margin="normal"
+      />
       <TextField
         name="password"
         label="Password"
@@ -136,7 +147,7 @@ function ProfileComponent({ onClose }) {
           ),
         }}
       />
-      <Button variant="contained" onClick={handleSave} sx={{ marginTop: '20px' }}>
+      <Button variant="contained" onClick={handleSave} fullWidth>
         Save
       </Button>
     </Box>
