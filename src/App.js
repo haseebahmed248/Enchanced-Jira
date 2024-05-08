@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Login from './Pages/Login';
 import SignUp from './Pages/SignUp';
@@ -11,18 +11,21 @@ import { UserProvider } from './Pages/Components/UserContext';
 import PrivateRoutes from './Pages/Components/Security/PrivateRoutes';
 import UserContextProvider from './Pages/Components/Security/AccountContext'; // Import UserContextProvider
 
+export const MessageContext = React.createContext();
 function App() {
+  const  [messages,setMessages] = useState([]);
   return (
     <BrowserRouter>
-
       <UserContextProvider>
             <UserProvider>
+            <MessageContext.Provider value={{messages,setMessages}}>
         <div className="App">
           <Routes>
             <Route path="/" element={<Login />} />
             <Route path="/signUp" element={<SignUp />} />
             <Route path='/admin' element={<AdminLogin />} />  
             <Route element={<PrivateRoutes />}>
+            
               <Route path="/organizations" element={<Organizations />} />
               <Route path="/organizations/Home" element={<Home />} />
               <Route path="/admin/Dashboard" element={<AdminDashboard />} />
@@ -30,9 +33,9 @@ function App() {
             <Route path="*" element={<Login />} />  
           </Routes>
         </div>
+        </MessageContext.Provider>
         </UserProvider>
       </UserContextProvider>
-
     </BrowserRouter>
     
   );

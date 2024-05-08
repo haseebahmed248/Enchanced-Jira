@@ -558,11 +558,11 @@ const OrganizationManager = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [snackbarMessage, setSnackbarMessage] = useState('');
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-
+  
   const fetchOrganizations = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:4003/organization/organizations');
+      const response = await fetch('http://localhost:4001/organization/organizations');
       if (response.ok) {
         const data = await response.json();
         setOrganizations(data);
@@ -618,7 +618,7 @@ const OrganizationManager = () => {
       setSnackbarOpen(true);
       return;
     }
-
+    
     const errors = [];
 
     for (const userId of selectedUserIds) {

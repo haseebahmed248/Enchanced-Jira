@@ -6,6 +6,7 @@ import UserContext from './Components/UserContext';
 import { AccountContext } from './Components/Security/AccountContext';
 import { Button, TextField, Container, Typography, Box, Grid } from '@mui/material';
 import styled from 'styled-components';
+import SnackbarMessage from './Components/SnackbarComponent';
 
 const FullHeightGrid = styled(Grid)`
   height: 100vh;
@@ -26,7 +27,7 @@ const ImageContainer = styled(Grid)`
 
 
 const SmallContainer = styled(Container)`
-  max-width: 40%;
+  max-width: 100%;
   height: 50vh;
 `;
 
@@ -56,7 +57,7 @@ const CircleImage = styled('img')`
 `;
 
 function Login() {
-  const userId = useContext(UserContext);
+  const {currentUser,setCurrentUser} = useContext(AccountContext);
   const { user, setUser } = useContext(AccountContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
@@ -67,12 +68,15 @@ function Login() {
     setEmail(email);
     console.log(sub)
     try {
-      const response = await axios.post('http://localhost:4003/users/checkLoginSub', { sub });
+      const response = await axios.post('/users/checkLoginSub', { sub });
       console.log(sub);
       console.log(response)
       if (response.status === 200) {
-        userId.email = response.data.email
-        console.log(userId.email)
+        setCurrentUser({email: response.data.data[0].email,id: response.data.data[0].id,
+          username: response.data.data[0].username,image_url: response.data.data[0].image_url,
+          sub:response.data.data[0].sub,role:response.data.data[0].role,password:response.data.data[0].password
+        });
+        console.log(currentUser.email)
         setUser({loggedIn: true});
         navigate('/organizations');
       } else {
@@ -92,9 +96,13 @@ function Login() {
         email: email,
         password: password
       };
-      const response = await axios.post('http://localhost:4003/users/checkLogin', loginData);
+      const response = await axios.post('/users/checkLogin', loginData);
       console.log("Login successful!");
-      userId.email = response.data.data[0].email
+      setCurrentUser({email: response.data.data[0].email,id: response.data.data[0].id,
+        username: response.data.data[0].username,image_url: response.data.data[0].image_url,
+        sub:response.data.data[0].sub,role:response.data.data[0].role,password:response.data.data[0].password
+      });
+      console.log("Current User: "+currentUser.email)
       console.log(response)
       if (response.status === 200) {
         setUser({loggedIn: true, token: response.data.token});
@@ -134,9 +142,7 @@ function Login() {
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-        <CircleImage src="https://i.ibb.co/wwCSJ0k/Dark-White-Letter-FD-Logo-3.png" alt="Introduction Image" sx={{
-          border:'1px solid black'
-        }}/>
+        <CircleImage src="https://i.ibb.co/wwCSJ0k/Dark-White-Letter-FD-Logo-3.png" alt="Introduction Image" />
           <SmallContainer component="main" sx={{ mt: 4, mb: 4 }}>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
           <Typography component="h1" variant="h2" sx={{
@@ -147,7 +153,7 @@ function Login() {
             Login
           </Typography>
             <form noValidate onSubmit={handleSubmit} sx={{ width: '100%', mt: 1 }}>
-              <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus value={email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
               <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
               {errorMessage && <Typography variant="body2" color="error">{errorMessage}</Typography>}
               <GoogleApi handleGoogleSuccess={handleGoogleSuccess} style={{marginTop: "10px"}}/>

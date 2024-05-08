@@ -20,6 +20,7 @@ export default function OrganizationMember({ users }) {
     };
     
     const handleClose = () => {
+        console.log("closing",users);
         setAnchorEl(null);
     };
 
@@ -64,7 +65,7 @@ export default function OrganizationMember({ users }) {
                 {users.map((user) => (
                         <ListItem key={user.u_id}>
                             <ListItemIcon>
-                                <Avatar alt={user.username} src={user.profilePicture} />
+                                <Avatar alt={user.username} src={"http://localhost:4003/uploads"+user.image_url} />
                             </ListItemIcon>
                             <ListItemText sx={{marginRight:5}} primary={user.username} />
                             <IconButton color="primary" onClick={()=>{addFriend(user.username)}}>

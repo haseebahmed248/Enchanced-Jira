@@ -9,69 +9,65 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
-import UserContext from './UserContext';
+import { AccountContext } from './Security/AccountContext';
 
 function ProfileComponent({ onClose }) {
-  const userId = useContext(UserContext); // Accessing email from UserContext
+  const {currentUser,setCurrentUser} = useContext(AccountContext); 
   const [showPassword, setShowPassword] = useState(false);
-  const [userData, setUserData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    image: null,
-    sub:'',
-    role:''
-  });
-
-  useEffect(() => {
-   
-    getUserByEmail()
-  }, []);
-
-  const getUserByEmail = async (email) => {
-    try {
-      const response = await axios.get(`http://localhost:4003/users/getUserByEmail/${userId.email}`);
-      const { username, email, password,role,sub } = response.data;
-      console.log("res",response)
-      setUserData({ username, email, password, role,sub });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevUserData) => ({ ...prevUserData, [name]: value }));
+    setCurrentUser((prevUserData) => ({ ...prevUserData, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const imageFile = e.target.files[0];
-    setUserData((prevUserData) => ({ ...prevUserData, image: imageFile }));
+    setCurrentUser((prevUserData) => ({ ...prevUserData, image: imageFile }));
+    uploadImage(imageFile);
+  };
+
+  const uploadImage = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', imageFile);
+      const response = await axios.post(`http://localhost:4003/users/upload/${currentUser.email}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Image uploaded successfully:', response.data);
+      setCurrentUser((prevUserData) => ({ ...prevUserData, image_url: response.data.image_url }));
+      console.log("after upload" ,currentUser.image_url)
+      console.log(currentUser)
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
   };
 
   const handleSave = async () => {
     try {
       const formData = new FormData();
-      formData.append('username', userData.username);
-      formData.append('email', userData.email);
-      formData.append('password', userData.password);
-      formData.append('image', userData.image);
+      formData.append('username', currentUser.username);
+      formData.append('email', currentUser.email);
+      formData.append('password', currentUser.password);
+      formData.append('image', currentUser.image_url);
   //http://localhost:4000/users/updateUser/aimannn@gmail.com
   const body={
-    username:userData.username,
-    email:userData.email,
-    password:userData.password,
-    role:userData.role,
-    sub:userData.sub,
-
+    username:currentUser.username,
+    email:currentUser.email,
+    password:currentUser.password,
+    role:currentUser.role,
+    sub:currentUser.sub,
+    image_url: currentUser.image_url,
   }
+  console.log("after button click   " ,currentUser.image_url)
   console.log("body",body)
-      const response = await axios.put(`http://localhost:4003/users/updateUser/${userId.email}`,body );
-  
+      const response = await axios.put(`http://localhost:4003/users/updateUser/${currentUser.email}`,body );
+      console.log("response",response)
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
@@ -104,8 +100,8 @@ function ProfileComponent({ onClose }) {
       </Typography>
 
       <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'lightgray', marginBottom: '20px' }}>
-        {userData.image ? (
-          <img src={URL.createObjectURL(userData.image)} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
+        {currentUser.image ? (
+          <img src={"http://localhost:4003/uploads"+currentUser.image_url} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
         ) : (
           <Typography variant="body1" textAlign="center" style={{ lineHeight: '100px' }}>Upload Image</Typography>
         )}
@@ -118,13 +114,13 @@ function ProfileComponent({ onClose }) {
         </Button>
       </label>
 
-      <TextField name="username" label="Username" value={userData.username} onChange={handleInputChange} fullWidth margin="normal" />
-      <TextField name="email" label="Email" value={userData.email} onChange={handleInputChange} fullWidth margin="normal" />
+      <TextField name="username" label="Username" value={currentUser.username} onChange={handleInputChange} fullWidth margin="normal" />
+      <TextField name="email" label="Email" value={currentUser.email} onChange={handleInputChange} fullWidth margin="normal" />
       <TextField
         name="password"
         label="Password"
         type={showPassword ? 'text' : 'password'}
-        value={userData.password}
+        value={currentUser.password}
         onChange={handleInputChange}
         fullWidth
         margin="normal"
