@@ -14,27 +14,39 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
     width: '100%',
     display: 'flex',
-    height: '20px',
+    height: '50px',
     alignItems: 'center',
+    '@media (max-width:600px)': {
+        flexDirection: 'column',
+        height: 'auto',
+    },
 }));
 
 Friends.propTypes = {
     image: PropTypes.string.isRequired,
     username: PropTypes.string.isRequired,
     onClick: PropTypes.func.isRequired,
-  };
-  
+};
 
-export default function Friends({ image, alt, username,onClick }) {
+export default function Friends({ image, alt, username, onClick }) {
     return (
-        <Card sx={{ marginBottom: '10px', cursor: 'pointer' }} onClick={onClick}>
+        <Card sx={{ 
+            marginBottom: '10px', 
+            cursor: 'pointer', 
+            borderRadius: '20px', 
+            boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)', 
+            transition: '0.3s',
+            '&:hover': {
+                boxShadow: '0 8px 16px 0 rgba(0,0,0,0.6)',
+            },
+        }} onClick={onClick}>
             <Item>
                 <CardMedia
                     component="img"
-                    sx={{ width: 30, height: 30 }}
+                    sx={{ width: 30, height: 30, borderRadius: '50%', margin: '10px' }}
                     image="https://plus.unsplash.com/premium_photo-1676637000058-96549206fe71?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8aW1hZ2V8ZW58MHx8MHx8fDA%3D"
                     alt={alt} />
-                <h3 className="username">{username}</h3>
+                <h3 className="username" style={{ margin: '0', color: '#333', fontSize: '16px' }}>{username}</h3>
             </Item>
         </Card>
     );

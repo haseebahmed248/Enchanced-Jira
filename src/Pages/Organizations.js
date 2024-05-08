@@ -73,8 +73,8 @@ export default function Organizations() {
 
           {/* Move the Available Organizations card to the right */}
           <Grid item xs={12} md={8}>
-            <Item sx={{ minHeight: '300px', padding: '16px' }}>
-              <Typography variant="h4" gutterBottom>
+            <Item sx={{ minHeight: '300px',height:'85vh', padding: '16px' }}>
+              <Typography variant="h4" gutterBottom mt={5}>
                 Available Organizations
               </Typography>
               <OrgCard organizations={organizations} />

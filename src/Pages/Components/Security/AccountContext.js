@@ -17,6 +17,7 @@ const UserContextProvider = ({ children }) => {
         password: '',
         sub:'',
         role:'',
+        user_id:''
       });
     const [selectedOrgId,setSelectedOrgId] = useState('');
     
