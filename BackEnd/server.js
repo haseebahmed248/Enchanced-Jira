@@ -8,6 +8,7 @@ const users = require('./Routes/users')
 const organization = require('./Routes/organization')
 const admin = require('./Routes/admin')
 const dotenv = require('dotenv')
+const httpProxyMiddleware = require('http-proxy-middleware');
 dotenv.config()
 const {corsConfig} = require('./Controller/serveController')
 const jwt = require('jsonwebtoken');
@@ -51,11 +52,19 @@ io.use((socket, next) => {
 
 io.on('connect', socket => {
     initializeUser(socket)
-    console.log("connected", socket.decoded.id); // Access userId from decoded object
+    console.log("connected", socket.decoded.id); 
     
     socket.on('add_friend', (name, cb) => addFriend(name, cb, socket ))
 });
+const apiProxy = httpProxyMiddleware.createProxyMiddleware({
+    target: process.env.API_BASE_URL, 
+    changeOrigin: true,
+    pathRewrite: {
+        '^/api': '', 
+    },
+});
 
+app.use('/api', apiProxy);
 
 server.listen(PORT,()=>{
     console.log(`Servier is Listening to Port ${PORT}`);
