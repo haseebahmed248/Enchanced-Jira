@@ -283,15 +283,13 @@ router.post('/insertUserSub', async (req, res) => {
     const { username, email, role, sub } = req.body;
     const user_id = uuidv4();
     try {
-        // Check if the "sub" value already exists in the database
+        
         const existingUser = await pool.query("SELECT * FROM Users WHERE sub = $1", [sub]);
         if (existingUser.rows.length > 0) {
-            // Return an error response if the "sub" value already exists
+            
             return res.status(400).send("Error: sub value already exists.");
         }
-
-        // If "sub" value is unique, insert the new user
-        const insertUser = await pool.query("INSERT INTO Users(username, email, role, sub,user_id) VALUES ($1, $2, $3, $4,$5)", [username, email, role, sub,user_id]);
+        await pool.query("INSERT INTO Users(username, email, role, sub,user_id) VALUES ($1, $2, $3, $4,$5)", [username, email, role, sub,user_id]);
         
         jwtSign({
             email: email,
@@ -312,26 +310,17 @@ router.post('/insertUserSub', async (req, res) => {
     }
 });
 
-router.post('/logout/:email', (req, res) => {
-    // try {
-        const userEmail = req.params.email.toLowerCase().trim(); // Convert to lowercase and trim whitespace
-        
-        // Log the session to check if it exists
-        console.log("Session before destruction:", req.session);
-
-        // Check if the user is logged in with the provided email
-    //     if (req.session.user && req.session.user.email === userEmail) {
-    //         req.session.destroy(); // Destroy the session
-    //         return res.status(200).send("Logged out successfully");
-    //     } else {
-    //         // If the user is not logged in with the provided email, send an error response
-    //         return res.status(400).send("Invalid email or user not logged in");
-    //     }
-    // } catch (error) {
-    //     console.error("Error logging out:", error);
-    //     res.status(500).send("Error logging out");
-    // }
-});
+router.post('/logout/:email', async (req, res) => {
+    try {
+        const userEmail = req.params.email;
+            const expiredToken = await jwtSign({}, process.env.SECRET, { expiresIn: 0 });
+            res.status(200).send({ token: expiredToken, message: "Logged out successfully" });
+       
+    } catch (error) {
+        console.error("Error logging out:", error);
+        res.status(500).json("Error logging out");
+    }
+})
 
 
 
@@ -353,7 +342,7 @@ router
         if (!validPassword) {
             return res.status(401).send("Invalid email or password");
         }
-        await sendLoginEmail(getUser.rows[0].email);
+        // await sendLoginEmail(getUser.rows[0].email);
 
         jwtSign({
             email: getUser.rows[0].email,
