@@ -1,5 +1,5 @@
 // Sidebar.js
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { Grid, ListItem, List } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
@@ -19,7 +19,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Sidebar() {
-  
+  const {selectedOrgId,setSelectedOrgId} = useContext(AccountContext)
   const {friends,setFriends} = useContext(AccountContext);
   const [selectedItem, setSelectedItem] = useState("Projects");
   const [open, setOpen] = useState(false); // State for opening message panel
@@ -28,32 +28,29 @@ export default function Sidebar() {
   const [image,setImage]= useState("");
   const [tasks, setTasks] = useState([]); 
   const [selectedTask, setSelectedTask] = useState(null); 
-  const handleItemClick = (item) => {
-    setSelectedItem(item);
-export default function Sidebar({ organizationId }) {
-  const [selectedItem, setSelectedItem] = useState("Projects");
-  const [open, setOpen] = useState(false); 
-  const [friendName, setFriendName] = useState(""); 
-
   useEffect(() => {
-    if (organizationId) {
-      console.log("organizationsss",organizationId);
+    if (selectedOrgId) {
+      console.log("organizationsss",selectedOrgId);
       fetchTasks();
     }
-  }, [organizationId] );
+  }, [selectedOrgId] );
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/users/getOrgTasks/${organizationId}`);
+      const response = await axios.get(`http://localhost:4000/users/getOrgTasks/${selectedOrgId}`);
       setTasks(response.data); // Set tasks state with fetched data
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   };
-
-  const handleItemClick = (taskName) => {
-    setSelectedTask(taskName); // Set the selected task
+  
+  const handleItemClick = (item) => {
+    
+    setSelectedItem(item);
   };
+  const handleListItemClick = (task_name)=>{
+    setSelectedTask(task_name);
+  }
   
   const openMessagePanel = (name,userId,image) => {
     setFriendName(name);
@@ -102,7 +99,7 @@ export default function Sidebar({ organizationId }) {
                 <ListItemButton
                   key={task.task_id}
                   sx={{ borderRadius: 1, marginBottom: "10px" }}
-                  onClick={() => handleItemClick(task.task_name)}
+                  onClick={() => handleListItemClick(task.task_name)}
                 >
                   {task.task_name}
                 </ListItemButton>
