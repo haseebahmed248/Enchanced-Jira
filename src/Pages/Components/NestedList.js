@@ -3,16 +3,16 @@ import NestedListItem from './NestedListItem';
 import List from '@mui/material/List';
 import { ListSubheader } from '@mui/material';
 import axios from 'axios';
-import UserContext from './UserContext';
+import { AccountContext } from './Security/AccountContext';
 
 export default function NestedList() {
-  const userId = useContext(UserContext); 
+  const {currentUser} = useContext(AccountContext); 
   const [unassociatedOrganizations, setUnassociatedOrganizations] = useState([]);
 
   useEffect(() => {
     const fetchUnassociatedOrganizations = async () => {
       try {
-        const response = await axios.get(`http://localhost:4003/users/getUnassociatedOrganizationsByEmail/${userId.email}`);
+        const response = await axios.get(`http://localhost:4003/users/getUnassociatedOrganizationsByEmail/${currentUser.email}`);
         setUnassociatedOrganizations(response.data);
       } catch (error) {
         console.error('Error fetching unassociated organizations:', error);
@@ -20,10 +20,10 @@ export default function NestedList() {
     };
 
     fetchUnassociatedOrganizations();
-  }, [userId]);
+  }, [currentUser]);
   const handleAddUserToOrganization = async (org_id) => {
     try {
-      await axios.post(`http://localhost:4003/users/addUserInOrganizationByEmail/${org_id}`, { email: userId.email });
+      await axios.post(`http://localhost:4003/users/addUserInOrganizationByEmail/${org_id}`, { email: currentUser.email });
       alert('User added to organization successfully');
     } catch (error) {
       console.error('Error adding user to organization:', error);

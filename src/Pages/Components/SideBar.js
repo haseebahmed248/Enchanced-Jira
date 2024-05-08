@@ -1,11 +1,12 @@
 // Sidebar.js
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Grid, ListItem, List } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Friends from './Friends';
 import ListItemButton from '@mui/material/ListItemButton';
 import MessagePanel from './MessagePanel';
+import { AccountContext } from './Security/AccountContext';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -16,16 +17,24 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function Sidebar() {
+  
+  const {friends,setFriends} = useContext(AccountContext);
   const [selectedItem, setSelectedItem] = useState("Projects");
   const [open, setOpen] = useState(false); // State for opening message panel
   const [friendName, setFriendName] = useState(""); // State for storing friend name
-
+  const [recipientUserId, setRecipientUserId] = useState(null);
+  const [image,setImage]= useState("");
   const handleItemClick = (item) => {
     setSelectedItem(item);
   };
-
-  const openMessagePanel = (name) => {
+  
+  const openMessagePanel = (name,userId,image) => {
     setFriendName(name);
+    setRecipientUserId(userId);
+    setImage("http://localhost:4003/uploads"+image);
+    console.log("Image url is : ", image);
+    console.log("Friend id is :"+ userId);
+    console.log("Friends are: ", friends);
     setOpen(true);
   };
 
@@ -34,9 +43,18 @@ export default function Sidebar() {
       <Grid item xs={1.5}>
         <Item elevation={0} square variant='outlined' sx={{ height: '49%', overflow: 'scroll' }}>
           <h2>DM's</h2>
-          <Friends image={'./Jira.png'} username={"haseeb"} onClick={() => openMessagePanel("haseeb")} />
+          {friends.map((friend, index) => (
+            <Friends  
+              key={friend.userid} 
+              username={friend.username} 
+              image={friend.image_url}
+              onClick={() => openMessagePanel(friend.username, friend.userid,friend.image_url)} 
+            />
+          ))}
+          
+          {/* <Friends image={'./Jira.png'} username={"haseeb"} onClick={() => openMessagePanel("haseeb")} />
           <Friends image={'./Jira.png'} username={"Customizable Robot"} />
-          <Friends username={"Test"} />
+          <Friends username={"Test"} /> */}
         </Item>
         <Item elevation={0} square variant='outlined' sx={{ height: '49%' }}>
           <List sx={{ display: 'block' }}>
@@ -67,7 +85,7 @@ export default function Sidebar() {
         </Item>
       </Grid>
       <Grid item xs={10.5}>
-        <MessagePanel open={open} name={friendName} setOpen={setOpen} />
+        <MessagePanel open={open} name={friendName} setOpen={setOpen} recipientUserId={recipientUserId} image={image} />
       </Grid>
     </Grid>
   );

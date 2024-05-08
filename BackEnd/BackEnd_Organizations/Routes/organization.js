@@ -135,7 +135,7 @@ router.get("/organization-details/:org_id", async (req, res) => {
             SELECT
               o.title AS organization_name,
               COUNT(uo.u_org_id) AS number_of_users,
-              ARRAY_AGG(json_build_object('username', u.username, 'id', u.u_id)) AS users
+              ARRAY_AGG(json_build_object('username', u.username, 'id', u.u_id, 'image_url', u.image_url, 'userId', u.user_id, 'email', u.email,'sub', u.sub,'password',u.password, 'role',u.role)) AS users
             FROM
               usr_org uo
               INNER JOIN organizations o ON uo.org_id = o.org_id
@@ -146,7 +146,7 @@ router.get("/organization-details/:org_id", async (req, res) => {
               o.title
             `,
             [org_id]
-          );
+        );
   
       if (result.rows.length === 0) {
         res.status(404).send("Organization not found.");

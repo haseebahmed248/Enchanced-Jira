@@ -13,8 +13,32 @@ const initializeUser = async socket => {
       0,
       -1
     );
-    console.log(`${socket.decoded.username} friends:`, friendList);
-    socket.emit("friends", friendList);
+    const prassedFriendList = await parseFriendList(friendList);
+    console.log(`${socket.decoded.username} friends:`, prassedFriendList);
+    socket.emit("friends", prassedFriendList);
+  };
+  
+
+  const parseFriendList = async friendList => {
+    const newFriendList = [];
+    if (Array.isArray(friendList)) {
+      for (let friend of friendList) {
+        const parsedFriend = friend.split(".");
+        const friendConnected = await redisClient.hget(
+          `userid:${parsedFriend[0]}`,
+          "connected"
+        );
+        newFriendList.push({
+          username: parsedFriend[0],
+          userid: parsedFriend[1],
+          connected: friendConnected,
+        });
+      }
+    }
+    console.log("inside friendList: ",friendList);
+    console.log("insdie friend List: ",parseFriendList)
+    console.log("Insides parsed List: ",newFriendList)
+    return newFriendList;
   };
 
   module.exports = initializeUser
