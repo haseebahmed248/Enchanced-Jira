@@ -4,13 +4,16 @@ import Button from '@mui/material/Button';
 import axios from 'axios';
 import Autocomplete from '@mui/material/Autocomplete';
 import UserContext from './UserContext';
+import { MessageContext } from '../../App';
+
 
 const AddTaskComponent = ({ onClose }) => {
   const [taskName, setTaskName] = useState('');
   const [taskDesc, setTaskDesc] = useState('');
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null); // Use null for better control
-  const { org_id } = useContext(UserContext); // Access org_id from UserContext
+  // const { org_id } = useContext(UserContext); // Access org_id from UserContext
+  const {orgID} = useContext(MessageContext);
 
   useEffect(() => {
     fetchUsers();
@@ -41,7 +44,7 @@ const AddTaskComponent = ({ onClose }) => {
         task_name: taskName,
         task_desc: taskDesc,
         email: selectedUser, // Pass email as parameter
-        org_id: org_id // Pass org_id from UserContext
+        org_id: orgID // Pass org_id from UserContext
       });
       onClose(); // Close the add task component after task insertion
     } catch (error) {

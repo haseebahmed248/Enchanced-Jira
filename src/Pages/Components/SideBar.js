@@ -1,5 +1,5 @@
 // Sidebar.js
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState,useEffect } from 'react';
 import { Grid, ListItem, List } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
@@ -7,7 +7,8 @@ import Friends from './Friends';
 import ListItemButton from '@mui/material/ListItemButton';
 import MessagePanel from './MessagePanel';
 import { AccountContext } from './Security/AccountContext';
-import axios from 'axios'; // Import axios for making HTTP requests
+import { MessageContext } from '../../App';
+import axios from 'axios';
 import TaskData from './Tasks'; 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -25,24 +26,28 @@ export default function Sidebar() {
   const [open, setOpen] = useState(false); // State for opening message panel
   const [friendName, setFriendName] = useState(""); // State for storing friend name
   const [recipientUserId, setRecipientUserId] = useState(null);
+  const {orgID,setOrgID} = useContext(MessageContext);
   const [image,setImage]= useState("");
   const [tasks, setTasks] = useState([]); 
   const [selectedTask, setSelectedTask] = useState(null); 
+  
+
   useEffect(() => {
-    if (selectedOrgId) {
-      console.log("organizationsss",selectedOrgId);
+    if (orgID) {
+      console.log("organizationsss",orgID);
       fetchTasks();
     }
-  }, [selectedOrgId] );
+  }, [orgID] );
 
   const fetchTasks = async () => {
     try {
-      const response = await axios.get(`http://localhost:4000/users/getOrgTasks/${selectedOrgId}`);
+      const response = await axios.get(`http://localhost:4003/users/getOrgTasks/${orgID}`);  //${selectedOrgId.id}
       setTasks(response.data); // Set tasks state with fetched data
     } catch (error) {
       console.error('Error fetching tasks:', error);
     }
   };
+  
   
   const handleItemClick = (item) => {
     
@@ -51,8 +56,12 @@ export default function Sidebar() {
   const handleListItemClick = (task_name)=>{
     setSelectedTask(task_name);
   }
+  const handleCloseTaskData = () => {
+    setSelectedTask(null); // Reset selected task when closing TaskData
+  };
   
   const openMessagePanel = (name,userId,image) => {
+    console.log("Organization Id is :", orgID)
     setFriendName(name);
     setRecipientUserId(userId);
     setImage("http://localhost:4003/uploads"+image);
@@ -88,7 +97,7 @@ export default function Sidebar() {
         <Item elevation={0} square variant='outlined' sx={{ height: '49%' }}>
           <List sx={{ display: 'block' }}>
             <ListItem sx={{display:'block'}}>
-              <ListItemButton
+            <ListItemButton
                 sx={{ borderRadius: 1, marginBottom: "10px" }}
                 className={selectedItem === 'Projects' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
                 onClick={() => handleItemClick('Projects')}
@@ -109,9 +118,8 @@ export default function Sidebar() {
         </Item>
       </Grid>
       <Grid item xs={10.5}>
-        {/* Render the TaskData component with the selected task name */}
-        {selectedTask && <TaskData taskName={selectedTask} onClose={handleCloseTaskData} />}
-        <MessagePanel open={open} name={friendName} setOpen={setOpen}  image={image} recipientUserId={recipientUserId}/>
+      {selectedTask && <TaskData taskName={selectedTask} onClose={handleCloseTaskData} />}
+        <MessagePanel open={open} name={friendName} setOpen={setOpen} recipientUserId={recipientUserId} image={image} />
       </Grid>
     </Grid>
   );

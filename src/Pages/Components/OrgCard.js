@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, Grid } from '@mui/material';
 import { AccountContext } from './Security/AccountContext';
+import { MessageContext } from '../../App';
 
 function OrgCard({ organizations }) {
   const {currentUser,setSelectedOrgId} = useContext(AccountContext);
+  const {orgID,setOrgID} = useContext(MessageContext);
   const [userOrganizations, setUserOrganizations] = useState([]);
   const Navigate = useNavigate();
-
+  
   useEffect(() => {
     // Fetch organizations of the current user
     const fetchUserOrganizations = async () => {
@@ -32,6 +34,8 @@ function OrgCard({ organizations }) {
 
   function orgSubmit(orgId) {
     setSelectedOrgId(orgId);
+    setOrgID(orgId);
+    console.log("Id is now: ",orgID);
     console.log(orgId);
     Navigate('/organizations/Home', { state: { orgId } });
   }

@@ -13,8 +13,9 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
-        const response = await axios.get(`http://localhost:4000/users/getTasks/${taskName}`);
+        const response = await axios.get(`http://localhost:4003/users/getTasks/${taskName}`);
         setTaskData(response.data);
+        console.log("Tasks are : ",taskData)
       } catch (error) {
         console.error('Error fetching task data:', error);
       }
@@ -70,7 +71,6 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
       >
         Add Task
       </Button>
-
       {showAddTask && (
         <Addtask
           onClose={() => setShowAddTask(false)}
