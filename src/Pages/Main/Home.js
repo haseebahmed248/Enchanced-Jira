@@ -7,36 +7,45 @@ import { AccountContext } from '../Components/Security/AccountContext'
 import OrganizationMember from '../Components/OrganizationMember'
 import UseSocket from '../Components/UseSocket'
 export const SocketContext = React.createContext();
+export const MessageContext = React.createContext();
 
 export default function Home(){
-    const {user} = useContext(AccountContext);
+    const {user,setFriends,friends,selectedOrgId} = useContext(AccountContext);
     const [socket,setSocket] = useState(
         ()=> SocketCon(user)
     );
     const [users, setUsers] = useState([]);
-
+    const  [messages,setMessages] = useState([]);
+    
     useEffect(()=>{
         setSocket(()=>SocketCon(user))
         console.log(user.token+ " socket value is: ")
-        console.log(socket)}
+        console.log(socket)
+    }
         ,[user]
     );
-
+    
     useEffect(() => {
-        fetch('http://localhost:4003/users/getUsers')
+        fetch(`http://localhost:4001/organization/organization-details/${selectedOrgId}`)
             .then(response => response.json())
             .then(data => {
                 console.log(data)
-                setUsers(data)});
+                setUsers(data.users)
+            }
+            );
     }, []);
 
     UseSocket(socket);
     return (
         <div className='home--container'>
             <SocketContext.Provider value={{socket}}>
-            <J_AppBar />
-            <Sidebar />
-            <OrganizationMember users={users}/>
+            <MessageContext.Provider value={{messages,setMessages}}>
+                <J_AppBar />
+                    <AccountContext.Provider value={{friends,setFriends}}>
+                        <Sidebar />
+                    </AccountContext.Provider>
+                <OrganizationMember users={users}/>
+                </MessageContext.Provider>
             </SocketContext.Provider>
         </div>
     )

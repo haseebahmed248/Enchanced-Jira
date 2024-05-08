@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import UserContext from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, Grid } from '@mui/material';
+import { AccountContext } from './Security/AccountContext';
 
 function OrgCard({ organizations }) {
-  const userId = useContext(UserContext);
+  const {currentUser,setSelectedOrgId} = useContext(AccountContext);
   const [userOrganizations, setUserOrganizations] = useState([]);
   const Navigate = useNavigate();
 
@@ -12,7 +12,7 @@ function OrgCard({ organizations }) {
     // Fetch organizations of the current user
     const fetchUserOrganizations = async () => {
       try {
-        const response = await fetch(`http://localhost:4003/users/getOrganizationsOfUserByEmail/${userId.email}`);
+        const response = await fetch(`http://localhost:4003/users/getOrganizationsOfUserByEmail/${currentUser.email}`);
         if (response.ok) {
           const data = await response.json();
           setUserOrganizations(data);
@@ -25,12 +25,13 @@ function OrgCard({ organizations }) {
       }
     };
 
-    if (userId.email) {
+    if (currentUser.email) {
       fetchUserOrganizations();
     }
-  }, [userId.email]);
+  }, [currentUser.email]);
 
   function orgSubmit(orgId) {
+    setSelectedOrgId(orgId);
     console.log(orgId);
     Navigate('/organizations/Home');
   }

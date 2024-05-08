@@ -5,6 +5,7 @@ import GoogleApi from './Components/GoogleApi';
 import UserContext from './Components/UserContext';
 import { Button, TextField, Container, Typography, Box, Grid } from '@mui/material';
 import styled from 'styled-components';
+import { AccountContext } from './Components/Security/AccountContext';
 
 
 const FullHeightGrid = styled(Grid)`
@@ -26,7 +27,7 @@ const ImageContainer = styled(Grid)`
 
 
 const SmallContainer = styled(Container)`
-  max-width: 40%;
+  max-width: 100%;
   height: 50vh;
 `;
 
@@ -58,7 +59,8 @@ const CircleImage = styled('img')`
 
 function SignUp() {
   const navigate = useNavigate();
-  const userId = useContext(UserContext);
+  const {currentUser,setCurrentUser} = useContext(AccountContext);
+  const { user, setUser } = useContext(AccountContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -85,9 +87,10 @@ function SignUp() {
       );
 
       if (response.status === 200) {
-        userId.email = response.data.email;
-        console.log(response.data.email)
-        username.loggedIn = true;
+        setCurrentUser({email: response.data.email});
+        console.log("email",response.data.email)
+        console.log("api data: ",response)
+        setUser({loggedIn: true});
         navigate("/organizations");
       } else {
         setErrorMessage("An error occurred during SignUp");
@@ -115,7 +118,6 @@ function SignUp() {
       
       
       if (response.status === 200) {
-        userId.email = response.data.email;
         navigate('/');
       } else {
         setErrorMessage("An error occurred during sign-up");
@@ -146,12 +148,13 @@ function SignUp() {
               borderBottomRightRadius:'1.8%',
               }}/>
           </Grid>
-
+          
           <Grid item xs={12} sm={5} sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          width:'100%'
         }}>
         <CircleImage src="https://i.ibb.co/wwCSJ0k/Dark-White-Letter-FD-Logo-3.png" alt="Introduction Image" sx={{
           border:'1px solid black'
@@ -166,8 +169,8 @@ function SignUp() {
             Sign-Up
           </Typography>
             <form noValidate onSubmit={handleSubmit} sx={{ width: '100%', mt: 1 }}>
-              <TextField variant="outlined" margin="normal" required fullWidth id="username" label="User Name" name="username" autoComplete="username" autoFocus value={username} onChange={(e) => setUsername(e.target.value)} />
-              <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email" autoFocus value={email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField variant="outlined" margin="normal" required fullWidth id="username" label="User Name" name="username" autoComplete="username"  value={username} onChange={(e) => setUsername(e.target.value)} />
+              <TextField variant="outlined" margin="normal" required fullWidth id="email" label="Email Address" name="email" autoComplete="email"  value={email} onChange={(e) => setEmail(e.target.value)} />
               <TextField variant="outlined" margin="normal" required fullWidth name="password" label="Password" type="password" id="password" autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} />
               {errorMessage && <Typography variant="body2" color="error">{errorMessage}</Typography>}
               <GoogleApi handleGoogleSuccess={handleGoogleSuccess} style={{marginTop: "10px"}}/>

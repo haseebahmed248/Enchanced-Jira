@@ -8,9 +8,46 @@ const jwt = require('jsonwebtoken');
 const dotenv= require('dotenv');
 const jwtSign = require('../Jwt/jwtauth');
 dotenv.config();
-
+const multer = require('multer')
+const path = require('path')
 // Add middleware to parse JSON bodies
 router.use(express.json());
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function(req, file, cb) {
+        console.log(file);
+        const ext = file.mimetype.split('/')[1];
+        cb(null,`/${file.originalname}-${Date.now()}.${ext}`);
+    }
+})
+const upload = multer({
+    storage: storage,
+})
+router.use('/uploads', express.static('uploads'));
+
+router.post("/upload/:email", upload.single('file'), async (req, res) => {
+    try{
+        const image = req.file.filename;
+        const userEmail = req.params.email;
+        const query = {
+            text: "UPDATE users SET image_url = $1 WHERE email = $2",
+            values: [image, userEmail]
+        };
+        const result = await pool.query(query);
+        
+        if (result.rowCount > 0) {
+            res.status(200).json({message: "Image uploaded and user updated successfully"});
+        } else {
+            res.status(404).json({message: "User not found or update failed"});
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message:"Error uploading image"});
+    }
+});
 
 router.get('/getsession',(req,res)=>{
     res.send(req.session.user);
@@ -46,16 +83,16 @@ router.get('/getUserByEmail/:email', async (req, res) => {
 
 router.put('/updateUser/:email', async (req, res) => {
     const userEmail = req.params.email; // Retrieve user email from request parameters
-    const { username, email, password, role, sub } = req.body;
+    const { username, email, password, role, sub, image_url } = req.body;
 
     try {
         const updateUser = await pool.query(
-            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5 WHERE email = $6",
-            [username, email, password, role, sub, userEmail]
+            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5, image_url = $6 WHERE email = $7",
+            [username, email, password, role, sub, image_url, userEmail]
         );
 
         if (updateUser.rowCount > 0) {
-            res.status(200).send("User updated successfully");
+            res.status(200).json({message:"User updated successfully",data:updateUser.rows[0]});
         } else {
             res.status(404).send("User not found or update failed");
         }
@@ -244,6 +281,7 @@ router.post("/insertUser", async (req, res) => {
 
 router.post('/insertUserSub', async (req, res) => {
     const { username, email, role, sub } = req.body;
+    const user_id = uuidv4();
     try {
         // Check if the "sub" value already exists in the database
         const existingUser = await pool.query("SELECT * FROM Users WHERE sub = $1", [sub]);
@@ -253,12 +291,21 @@ router.post('/insertUserSub', async (req, res) => {
         }
 
         // If "sub" value is unique, insert the new user
-        const insertUser = await pool.query("INSERT INTO Users(username, email, role, sub) VALUES ($1, $2, $3, $4)", [username, email, role, sub]);
-        if (insertUser.rowCount > 0) {
-            res.status(200).send("User created successfully.");
-        } else {
-            res.status(500).send("Error creating new user.");
-        }
+        const insertUser = await pool.query("INSERT INTO Users(username, email, role, sub,user_id) VALUES ($1, $2, $3, $4,$5)", [username, email, role, sub,user_id]);
+        
+        jwtSign({
+            email: email,
+            username: username,
+            role: role,
+            id: user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token,email:email}).status(200)
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
         console.error("Error creating new user:", error);
         res.status(500).send("Error creating new user.");
@@ -339,23 +386,19 @@ router.post('/checkLoginSub', async (req, res) => {
             return res.status(401).send("Invalid sub value");
         }
 
-       
-        const user = getUser.rows[0];
-
-       
-        // req.session.user = {
-        //     id: user.id,
-        //     username: user.username,
-        //     email: user.email,
-        //     role: user.role,
-        //     sub: user.sub
-        // };
-
-     
-        res.status(200).send({
-            message: "Logged in successfully",
-            data:user.email
-        });
+        jwtSign({
+            email: getUser.rows[0].email,
+            username: getUser.rows[0].username,
+            role: getUser.rows[0].role,
+            id:getUser.rows[0].user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token,data:getUser.rows})
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).send("Error during login");
