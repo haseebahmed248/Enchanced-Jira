@@ -11,14 +11,16 @@ import { UserProvider } from './Pages/Components/UserContext';
 import PrivateRoutes from './Pages/Components/Security/PrivateRoutes';
 import UserContextProvider from './Pages/Components/Security/AccountContext'; // Import UserContextProvider
 
+export const OrganizationIdContext = React.createContext();
 export const MessageContext = React.createContext();
 function App() {
   const  [messages,setMessages] = useState([]);
+  const [orgID,setOrgID] = useState([]);
   return (
     <BrowserRouter>
       <UserContextProvider>
             <UserProvider>
-            <MessageContext.Provider value={{messages,setMessages}}>
+            <MessageContext.Provider value={{messages,setMessages,orgID,setOrgID}}>
         <div className="App">
           <Routes>
             <Route path="/" element={<Login />} />
