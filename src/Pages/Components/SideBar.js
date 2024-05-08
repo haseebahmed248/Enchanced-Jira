@@ -7,6 +7,8 @@ import Friends from './Friends';
 import ListItemButton from '@mui/material/ListItemButton';
 import MessagePanel from './MessagePanel';
 import { AccountContext } from './Security/AccountContext';
+import axios from 'axios'; // Import axios for making HTTP requests
+import TaskData from './Tasks'; 
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -24,8 +26,33 @@ export default function Sidebar() {
   const [friendName, setFriendName] = useState(""); // State for storing friend name
   const [recipientUserId, setRecipientUserId] = useState(null);
   const [image,setImage]= useState("");
+  const [tasks, setTasks] = useState([]); 
+  const [selectedTask, setSelectedTask] = useState(null); 
   const handleItemClick = (item) => {
     setSelectedItem(item);
+export default function Sidebar({ organizationId }) {
+  const [selectedItem, setSelectedItem] = useState("Projects");
+  const [open, setOpen] = useState(false); 
+  const [friendName, setFriendName] = useState(""); 
+
+  useEffect(() => {
+    if (organizationId) {
+      console.log("organizationsss",organizationId);
+      fetchTasks();
+    }
+  }, [organizationId] );
+
+  const fetchTasks = async () => {
+    try {
+      const response = await axios.get(`http://localhost:4000/users/getOrgTasks/${organizationId}`);
+      setTasks(response.data); // Set tasks state with fetched data
+    } catch (error) {
+      console.error('Error fetching tasks:', error);
+    }
+  };
+
+  const handleItemClick = (taskName) => {
+    setSelectedTask(taskName); // Set the selected task
   };
   
   const openMessagePanel = (name,userId,image) => {
@@ -37,6 +64,11 @@ export default function Sidebar() {
     console.log("Friends are: ", friends);
     setOpen(true);
   };
+
+  const handleCloseTaskData = () => {
+    setSelectedTask(null); // Reset selected task when closing TaskData
+  };
+
 
   return (
     <Grid container sx={{ height: "91.3%" }}>
@@ -64,28 +96,25 @@ export default function Sidebar() {
                 className={selectedItem === 'Projects' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
                 onClick={() => handleItemClick('Projects')}
               >
-                Projects
+                 Projects
               </ListItemButton>
-              <ListItemButton
-                sx={{ borderRadius: 1, marginBottom: "10px" }}
-                className={selectedItem === 'Test2' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
-                onClick={() => handleItemClick('Test2')}
-              >
-                Test2
-              </ListItemButton>
-              <ListItemButton
-                sx={{ borderRadius: 1, marginBottom: "10px" }}
-                className={selectedItem === 'Test3' ? 'Mui-focusVisible MuiListItemText-dense Mui-selected' : ''}
-                onClick={() => handleItemClick('Test3')}
-              >
-                Test3
-              </ListItemButton>
+              {tasks.map((task) => (
+                <ListItemButton
+                  key={task.task_id}
+                  sx={{ borderRadius: 1, marginBottom: "10px" }}
+                  onClick={() => handleItemClick(task.task_name)}
+                >
+                  {task.task_name}
+                </ListItemButton>
+              ))}
             </ListItem>
           </List>
         </Item>
       </Grid>
       <Grid item xs={10.5}>
-        <MessagePanel open={open} name={friendName} setOpen={setOpen} recipientUserId={recipientUserId} image={image} />
+        {/* Render the TaskData component with the selected task name */}
+        {selectedTask && <TaskData taskName={selectedTask} onClose={handleCloseTaskData} />}
+        <MessagePanel open={open} name={friendName} setOpen={setOpen}  image={image} recipientUserId={recipientUserId}/>
       </Grid>
     </Grid>
   );

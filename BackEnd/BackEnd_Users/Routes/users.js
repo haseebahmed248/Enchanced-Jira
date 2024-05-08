@@ -404,6 +404,76 @@ router.post('/checkLoginSub', async (req, res) => {
         res.status(500).send("Error during login");
     }
 });
+router.get('/getTasks', async (req, res) => {
+    try {
+
+        const data = await pool.query("SELECT tasks.*, users.username FROM tasks INNER JOIN users ON tasks.u_id = users.u_id");
+        res.json(data.rows).status(200);
+    } catch (e) {
+        res.json(e).status(500);
+    }
+})
+router.get('/getTasks/:name', async (req, res) => {
+    const name = req.params.name; // Extract the name parameter from the request
+
+    try {
+        // Use a parameterized query to prevent SQL injection
+        const data = await pool.query("SELECT tasks.*, users.username FROM tasks INNER JOIN users ON tasks.u_id = users.u_id WHERE task_name = $1", [name]);
+        
+        res.json(data.rows).status(200);
+    } catch (e) {
+        console.error('Error fetching tasks:', e);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+router.get('/getOrgTasks/:org_id', async (req, res) => {
+    const org_id = req.params.org_id;
+
+    try {
+        const data = await pool.query(`
+            SELECT tasks.*, users.username 
+            FROM tasks 
+            INNER JOIN users ON tasks.u_id = users.u_id
+            WHERE tasks.org_id = $1
+        `, [org_id]);
+
+        res.json(data.rows).status(200);
+    } catch (e) {
+        res.json(e).status(500);
+    }
+});
+router.post("/insertTask", async (req, res) => {
+    const { task_name, task_desc, email, org_id } = req.body;
+
+    try {
+        // Retrieve the user's u_id based on the email
+        const user = await pool.query(
+            "SELECT u_id FROM users WHERE email = $1",
+            [email]
+        );
+
+        // Check if the user exists
+        if (user.rows.length === 0) {
+            return res.status(404).send("User not found");
+        }
+
+        // Insert the task with the retrieved u_id and org_id
+        const insertTask = await pool.query(
+            "INSERT INTO tasks (task_name, task_desc, u_id, org_id) VALUES ($1, $2, $3, $4)",
+            [task_name, task_desc, user.rows[0].u_id, org_id]
+        );
+
+        res.status(200).send("Task inserted successfully");
+    } catch (error) {
+        console.error("Error inserting task:", error);
+        res.status(500).send("Error inserting task: " + error.message);
+    }
+});
+
+
+
+
 
 
 
