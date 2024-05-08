@@ -3,19 +3,17 @@ import axios from 'axios';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button'; // Import Button component
-import Addtask from './Addtask'; 
+import Button from '@mui/material/Button';
+import Addtask from './Addtask';
 
-const TaskData = ({ taskName, onClose, onAddTaskClick }) => { // Add onAddTaskClick prop
+const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
   const [taskData, setTaskData] = useState(null);
-  const [showAddTask, setShowAddTask] = useState(false); // State to manage visibility of Addtask component
+  const [showAddTask, setShowAddTask] = useState(false);
 
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
         const response = await axios.get(`http://localhost:4000/users/getTasks/${taskName}`);
-        console.log(response.data); // Log the response data to check its structure
-       
         setTaskData(response.data);
       } catch (error) {
         console.error('Error fetching task data:', error);
@@ -24,23 +22,22 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => { // Add onAddTaskCl
 
     fetchTaskData();
   }, [taskName]);
-  console.log("data",taskData);
+
   if (!taskData) {
     return <div>Loading...</div>;
   }
 
-  // Once taskData is available, you can access its properties
   return (
     <Box
       sx={{
         position: 'absolute',
-        top: 'calc(50% - 300px)',
-        bottom: 'calc(50% - 300px)',
-        right: '20px',
-        width: 'calc(100% - 40px)',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '80%',
         maxWidth: '1400px',
         maxHeight: '600px',
-        backgroundColor: 'white',
+        backgroundColor: '#f5f5f5',
         padding: '20px',
         borderRadius: '8px',
         boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
@@ -48,26 +45,38 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => { // Add onAddTaskCl
       }}
     >
       <IconButton onClick={onClose} sx={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
-        <CloseIcon />
+        <CloseIcon sx={{ color: '#d32f2f' }} />
       </IconButton>
 
-      <h2>Task Details</h2>
-      {taskData.map(task => (
-    <div key={task.task_id}>
-        <p>Task ID: {task.task_id}</p>
-        <p>Task Name: {task.task_name}</p>
-        <p>Task Description: {task.task_desc}</p>
-        <p>Assign To: {task.username}</p>
-    </div>
-))}
+      <h2 style={{ textAlign: 'center', color: '#3f51b5' }}>Task Details</h2>
 
-      {/* Add Task Button */}
-      <Button variant="contained" onClick={() => setShowAddTask(true)} sx={{ marginTop: '20px' }}>
+      {taskData.map((task, index) => (
+        <div key={task.task_id} style={{ marginBottom: '20px', backgroundColor: '#fff', padding: '10px', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <p style={{ margin: 0, fontWeight: 'bold' }}>Task ID:</p>
+          <p style={{ margin: 0 }}>{task.task_id}</p>
+          <p style={{ margin: 0, fontWeight: 'bold' }}>Task Name:</p>
+          <p style={{ margin: 0 }}>{task.task_name}</p>
+          <p style={{ margin: 0, fontWeight: 'bold' }}>Task Description:</p>
+          <p style={{ margin: 0 }}>{task.task_desc}</p>
+          <p style={{ margin: 0, fontWeight: 'bold' }}>Assign To:</p>
+          <p style={{ margin: 0 }}>{task.username}</p>
+        </div>
+      ))}
+
+      <Button
+        variant="contained"
+        onClick={() => setShowAddTask(true)}
+        sx={{ marginTop: '20px', width: '100%', backgroundColor: '#3f51b5', color: '#fff' }}
+      >
         Add Task
       </Button>
-      
-      {/* Render Addtask component if showAddTask state is true */}
-      {showAddTask && <Addtask onClose={() => setShowAddTask(false)} />}
+
+      {showAddTask && (
+        <Addtask
+          onClose={() => setShowAddTask(false)}
+          style={{ marginTop: '20px' }}
+        />
+      )}
     </Box>
   );
 };
