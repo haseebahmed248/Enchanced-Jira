@@ -7,7 +7,6 @@ import { AccountContext } from './Components/Security/AccountContext';
 import { Button, TextField, Container, Typography, Box, Grid } from '@mui/material';
 import styled from 'styled-components';
 import SnackbarMessage from './Components/SnackbarComponent';
-import { MessageContext } from '../App';
 
 const FullHeightGrid = styled(Grid)`
   height: 100vh;
@@ -64,22 +63,19 @@ function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const {setUserID} = useContext(MessageContext)
   
   const handleGoogleSuccess = async ({ username, email, sub }) => {
     setEmail(email);
     console.log(sub)
     try {
-      const response = await axios.post('http://localhost:4003/users/checkLoginSub', { sub });
+      const response = await axios.post('/users/checkLoginSub', { sub });
       console.log(sub);
       console.log(response)
       if (response.status === 200) {
         setCurrentUser({email: response.data.data[0].email,id: response.data.data[0].id,
           username: response.data.data[0].username,image_url: response.data.data[0].image_url,
-          sub:response.data.data[0].sub,role:response.data.data[0].role,password:response.data.data[0].password,
-          user_id:response.data.data[0].user_id
+          sub:response.data.data[0].sub,role:response.data.data[0].role,password:response.data.data[0].password
         });
-        setUserID(response.data.data[0].user_id)
         console.log(currentUser.email)
         setUser({loggedIn: true});
         navigate('/organizations');
@@ -100,13 +96,12 @@ function Login() {
         email: email,
         password: password
       };
-      const response = await axios.post('http://localhost:4003/users/checkLogin', loginData);
+      const response = await axios.post('/users/checkLogin', loginData);
       console.log("Login successful!");
       setCurrentUser({email: response.data.data[0].email,id: response.data.data[0].id,
         username: response.data.data[0].username,image_url: response.data.data[0].image_url,
         sub:response.data.data[0].sub,role:response.data.data[0].role,password:response.data.data[0].password
       });
-      setUserID(response.data.data[0].user_id)
       console.log("Current User: "+currentUser.email)
       console.log(response)
       if (response.status === 200) {

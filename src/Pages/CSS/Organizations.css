@@ -5,12 +5,8 @@
 }
 body{
     background-color: rgb(255, 255, 255);
-    overflow: hidden;
 }
 .orgContainer{
     width: 100%;
     height: 100%;
-    background-color: rgb(230, 227, 227);
-    background-size: cover; 
-    backdrop-filter: blur(500px);
-}
+  }

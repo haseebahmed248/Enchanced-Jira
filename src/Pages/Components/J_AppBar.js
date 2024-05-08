@@ -14,36 +14,12 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import ProfileComponent from './Profile';
 import axios from 'axios';
-import { styled } from '@mui/system';
 import { AccountContext } from './Security/AccountContext';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile'];
 
-const StyledAppBar = styled(AppBar)({
-  boxShadow: '0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12)', // Manually defined boxShadow
-  borderBottom: '1px solid',
-  '& .MuiToolbar-root': {
-    padding: '0 2px',
-    '&:hover': {
-      backgroundColor: 'rgba(0, 0, 0, 0.05)',
-    },
-  },
-  '& .MuiIconButton-root': {
-    padding: '8px',
-  },
-  '& .MuiButton-root': {
-    textTransform: 'none',
-    fontWeight: '500',
-  },
-  '& .MuiAvatar-root': {
-    width: '50px', // updated size
-    height: '50px', // updated size
-  },
-});
-
 function J_AppBar() {
-  const {setUser} = useContext(AccountContext);
   const [anchorElNav, setAnchorElNav] = useState(null);
   const [anchorElUser, setAnchorElUser] = useState(null);
   const [profileOpen, setProfileOpen] = useState(false); 
@@ -55,15 +31,11 @@ function J_AppBar() {
 
   const handleLogout = async () => {
     try {
-        await axios.post(`http://localhost:4003/users/logout/${currentUser.email}`);
-        console.log("user logged Out")
-        setUser({
-          loggedIn:false,
-          token:''
-        })
-        
+        await axios.post(`http://localhost:4003/users/logout/${currentUser.id}`);
+        // Redirect the user to the login page or do any other necessary actions
     } catch (error) {
         console.error("Error logging out:", error);
+        // Handle error if needed
     }
 };
 
@@ -89,7 +61,7 @@ function J_AppBar() {
   };
 
   return (
-    <StyledAppBar position="static" elevation={4}> 
+    <AppBar position="static" sx={{ bgcolor: "white" }} variant='outlined'>
       <Container maxWidth="l">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -216,7 +188,7 @@ function J_AppBar() {
         </Toolbar>
       </Container>
       {profileOpen && <ProfileComponent onClose={handleCloseProfile} userId={currentUser.id} />}
-    </StyledAppBar>
+    </AppBar>
   );
 }
 
