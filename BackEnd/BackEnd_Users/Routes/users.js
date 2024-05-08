@@ -306,6 +306,8 @@ router
         if (!validPassword) {
             return res.status(401).send("Invalid email or password");
         }
+        await sendLoginEmail(getUser.rows[0].email);
+
         jwtSign({
             email: getUser.rows[0].email,
             username: getUser.rows[0].username,
