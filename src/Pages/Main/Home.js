@@ -7,8 +7,11 @@ import { AccountContext } from '../Components/Security/AccountContext'
 import OrganizationMember from '../Components/OrganizationMember'
 import UseSocket from '../Components/UseSocket'
 export const SocketContext = React.createContext();
+import { useLocation } from 'react-router-dom';
 
 export default function Home(){
+    const location = useLocation();
+  const organizationId = location.state ? location.state.orgId : null;
     const {user} = useContext(AccountContext);
     const [socket,setSocket] = useState(
         ()=> SocketCon(user)
@@ -35,7 +38,7 @@ export default function Home(){
         <div className='home--container'>
             <SocketContext.Provider value={{socket}}>
             <J_AppBar />
-            <Sidebar />
+            <Sidebar organizationId={organizationId} />
             <OrganizationMember users={users}/>
             </SocketContext.Provider>
         </div>
