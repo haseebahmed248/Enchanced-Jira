@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
+import { Box, Typography, IconButton, Button, Paper, Grid } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import Button from '@mui/material/Button';
-import Addtask from './Addtask';
 
 const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
   const [taskData, setTaskData] = useState(null);
@@ -13,9 +10,8 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
   useEffect(() => {
     const fetchTaskData = async () => {
       try {
-        const response = await axios.get(`http://localhost:4003/users/getTasks/${taskName}`);
+        const response = await axios.get(`http://localhost:4001/organization/getTasks/${taskName}`);
         setTaskData(response.data);
-        console.log("Tasks are : ",taskData)
       } catch (error) {
         console.error('Error fetching task data:', error);
       }
@@ -25,7 +21,7 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
   }, [taskName]);
 
   if (!taskData) {
-    return <div>Loading...</div>;
+    return <Typography>Loading...</Typography>;
   }
 
   return (
@@ -35,8 +31,8 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        width: '80%',
-        maxWidth: '1400px',
+        width: '60%', // Reduced width
+        maxWidth: '500px', // Reduced max width
         maxHeight: '600px',
         backgroundColor: '#f5f5f5',
         padding: '20px',
@@ -49,34 +45,23 @@ const TaskData = ({ taskName, onClose, onAddTaskClick }) => {
         <CloseIcon sx={{ color: '#d32f2f' }} />
       </IconButton>
 
-      <h2 style={{ textAlign: 'center', color: '#3f51b5' }}>Task Details</h2>
+      <Typography variant="h4" align="center" color="primary" sx={{ marginBottom: '20px' }}>Task Details</Typography>
 
       {taskData.map((task, index) => (
-        <div key={task.task_id} style={{ marginBottom: '20px', backgroundColor: '#fff', padding: '10px', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>Task ID:</p>
-          <p style={{ margin: 0 }}>{task.task_id}</p>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>Task Name:</p>
-          <p style={{ margin: 0 }}>{task.task_name}</p>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>Task Description:</p>
-          <p style={{ margin: 0 }}>{task.task_desc}</p>
-          <p style={{ margin: 0, fontWeight: 'bold' }}>Assign To:</p>
-          <p style={{ margin: 0 }}>{task.username}</p>
-        </div>
+        <Paper key={task.task_id} sx={{ marginBottom: '20px', padding: '10px', borderRadius: '4px', boxShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>
+          <Grid container spacing={2}>
+            <Grid item xs={5}><Typography variant="h6">Task ID:</Typography></Grid>
+            <Grid item xs={5}><Typography>{task.task_id}</Typography></Grid>
+            <Grid item xs={5}><Typography variant="h6">Task Name:</Typography></Grid>
+            <Grid item xs={5}><Typography>{task.task_name}</Typography></Grid>
+            <Grid item xs={5}><Typography variant="h6">Task Description:</Typography></Grid>
+            <Grid item xs={5}><Typography>{task.task_desc}</Typography></Grid>
+            <Grid item xs={5}><Typography variant="h6">Assign To:</Typography></Grid>
+            <Grid item xs={5}><Typography>{task.username}</Typography></Grid>
+          </Grid>
+        </Paper>
       ))}
-
-      <Button
-        variant="contained"
-        onClick={() => setShowAddTask(true)}
-        sx={{ marginTop: '20px', width: '100%', backgroundColor: '#3f51b5', color: '#fff' }}
-      >
-        Add Task
-      </Button>
-      {showAddTask && (
-        <Addtask
-          onClose={() => setShowAddTask(false)}
-          style={{ marginTop: '20px' }}
-        />
-      )}
+      
     </Box>
   );
 };
