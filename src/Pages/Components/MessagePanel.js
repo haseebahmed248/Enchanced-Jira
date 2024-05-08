@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import Modal from '@mui/joy/Modal';
 import ModalClose from '@mui/joy/ModalClose';
 import Typography from '@mui/joy/Typography';
@@ -8,31 +8,50 @@ import Textarea from '@mui/joy/Textarea';
 import { Button } from '@mui/material';
 import Stack from '@mui/joy/Stack';
 import { styled } from '@mui/joy/styles';
+import { SocketContext } from '../Main/Home';
+import { AccountContext } from './Security/AccountContext';
+import { MessageContext } from '../../App';
 
 
 const Item = styled(Sheet)(({ theme }) => ({
     ...theme.typography['body-sm'],
     textAlign: 'center',
     fontWeight: theme.fontWeight.md,
-    color: theme.vars.palette.text.secondary,
     border: '1px solid',
     borderColor: theme.palette.divider,
     padding: theme.spacing(1),
     borderRadius: theme.radius.md,
   }));
 
-  export default function CloseModal({ open, name, setOpen }) {
+
+
+  export default function CloseModal({ open, name, setOpen,recipientUserId,image }) {
     const [modalOpen, setModalOpen] = React.useState(open);
     const [message, setMessage] = React.useState("");
-    const [messageStack, setMessageStack] = React.useState([]);
+    const {messages,setMessages} = useContext(MessageContext)
+    const {socket} = useContext(SocketContext);
   
+    useEffect(()=>{
+      // setMessages(prevStack => [...prevStack, messages])
+    }, [messages])
+    
     const pushMessage = () => {
       if (message.trim() !== "") {
-        setMessageStack(prevStack => [...prevStack, message]);
-        setMessage(""); // Clear the message input field after sending
+        setMessages(prevStack => [...prevStack, message]);
+        console.log("current socket: ",socket)
+        console.log("recipientUserId: ",recipientUserId)
+        console.log("current messages: ",message)
+        socket.emit('private_dm',JSON.stringify({recipientUserId, message}),({errorMsg,done})=>{
+          if(done){
+              return;
+          }
+          alert(errorMsg);
+      });
+        setMessage(""); 
       }
     }
   
+    
     React.useEffect(() => {
       setModalOpen(open);
     }, [open]);
@@ -43,6 +62,7 @@ const Item = styled(Sheet)(({ theme }) => ({
           aria-labelledby="close-modal-title"
           open={modalOpen}
           onClose={(_event) => {
+            setMessages([]);
             setModalOpen(false);
             setOpen(false);
           }}
@@ -65,14 +85,14 @@ const Item = styled(Sheet)(({ theme }) => ({
           >
             <ModalClose variant="outlined" />
             <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar alt={name} src="/static/images/avatar/1.jpg" sx={{ width: 56, height: 56 }} />
+              <Avatar alt={name} src={image} sx={{ width: 56, height: 56 }} />
               <Typography variant="h6" sx={{ marginLeft: 2, fontSize: 18 }}>{name}</Typography>
             </div>
             <div style={{ flex: '1', marginBottom: '1rem' }}>
               <Stack direction="column" spacing={1}>
-                {messageStack.map((message, index) => (
+                {(messages!= null)?messages.map((message, index) => (
                   <Item key={index}>{message}</Item>
-                ))}
+                )):null} 
               </Stack>
             </div>
             <div style={{ display: 'flex', alignItems: 'center' }}>

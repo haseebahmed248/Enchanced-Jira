@@ -1,15 +1,22 @@
-import React, { createContext } from 'react';
+
+import React, { createContext,useState } from 'react';
 
 const UserContext = createContext();
 
-export const UserProvider = ({ children, org_id }) => {
-  const userId = { email: null, org_id }; // Pass org_id here
-console.log( "org",org_id);
+export const UserProvider = ({ children }) => {
+  const [currentUser,setCurrentuser] = useState({
+    email:'',
+    id:'',
+    username:'',
+    image_url:'',
+  });
+  
   return (
-    <UserContext.Provider value={userId}>
+    <UserContext.Provider value={ {currentUser,setCurrentuser}}>
       {children}
     </UserContext.Provider>
   );
 };
 
 export default UserContext;
+
