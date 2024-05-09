@@ -1,18 +1,20 @@
 import React, { useContext, useEffect, useState } from 'react';
-import UserContext from './UserContext';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardActionArea, CardContent, CardMedia, Typography, Grid } from '@mui/material';
+import { AccountContext } from './Security/AccountContext';
+import { MessageContext } from '../../App';
 
 function OrgCard({ organizations }) {
-  const userId = useContext(UserContext);
+  const {currentUser,setSelectedOrgId} = useContext(AccountContext);
+  const {orgID,setOrgID} = useContext(MessageContext);
   const [userOrganizations, setUserOrganizations] = useState([]);
   const Navigate = useNavigate();
-
+  
   useEffect(() => {
     // Fetch organizations of the current user
     const fetchUserOrganizations = async () => {
       try {
-        const response = await fetch(`http://localhost:4003/users/getOrganizationsOfUserByEmail/${userId.email}`);
+        const response = await fetch(`http://localhost:4003/users/getOrganizationsOfUserByEmail/${currentUser.email}`);
         if (response.ok) {
           const data = await response.json();
           setUserOrganizations(data);
@@ -25,14 +27,17 @@ function OrgCard({ organizations }) {
       }
     };
 
-    if (userId.email) {
+    if (currentUser.email) {
       fetchUserOrganizations();
     }
-  }, [userId.email]);
+  }, [currentUser.email]);
 
   function orgSubmit(orgId) {
+    setSelectedOrgId(orgId);
+    setOrgID(orgId);
+    console.log("Id is now: ",orgID);
     console.log(orgId);
-    Navigate('/organizations/Home');
+    Navigate('/organizations/Home', { state: { orgId } });
   }
 
   return (
@@ -73,7 +78,7 @@ function OrgCard({ organizations }) {
               }} 
               key={organization.org_id}
             >
-            <CardActionArea onClick={()=> orgSubmit(organization.org_id)} >
+            <CardActionArea  onClick={() => orgSubmit(organization.org_id)} >
               <Grid container>
                 <Grid item xs={3}>
                   <CardMedia

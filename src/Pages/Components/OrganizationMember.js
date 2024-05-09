@@ -9,6 +9,24 @@ import IconButton from '@mui/material/IconButton';
 import ChatIcon from '@mui/icons-material/Chat';
 import PeopleIcon from '@mui/icons-material/People';
 import { SocketContext } from '../Main/Home';
+import { styled } from '@mui/material/styles';
+import { Box } from '@mui/material';
+
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+    width: theme.spacing(6),
+    height: theme.spacing(6),
+  }));
+  
+  const StyledIconButton = styled(IconButton)(({ theme }) => ({
+    color: 'blue',
+    borderColor: 'blue',
+    boxShadow: theme.shadows[10],
+    transition: 'box-shadow 0.3s ease-in-out',
+    '&:hover': {
+      boxShadow: theme.shadows[30],
+    },
+  }));
 
 export default function OrganizationMember({ users }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -20,6 +38,7 @@ export default function OrganizationMember({ users }) {
     };
     
     const handleClose = () => {
+        console.log("closing",users);
         setAnchorEl(null);
     };
 
@@ -38,42 +57,61 @@ export default function OrganizationMember({ users }) {
 
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
-
+    
     return (
-        <div style={{position:"absolute", top:"92%", right:'5%'}} >
-            <IconButton onClick={handleClick}>
-                <PeopleIcon />
-            </IconButton>
-            <Popover
-                id={id}
-                open={open}
-                anchorEl={anchorEl}
-                onClose={handleClose}
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'center',
-                }}
-                transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'center',
-                }}
-                sx={{borderRadius:2}}
-                elevation={1}
+        <Box sx={{ position: "fixed", bottom: 16, right: 16 }}>
+          <StyledIconButton onClick={handleClick}>
+          <PeopleIcon fontSize="large" style={{ color: 'blue' }} />
+          </StyledIconButton>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={anchorEl}
+            onClose={handleClose}
+            anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            transformOrigin={{
+                vertical: 'bottom',
+                horizontal: 'left',
+            }}
+            sx={{ borderRadius: 2, width: { xs: '90%', md: '50%' } }} 
+            elevation={3}
             >
-                <List >
-                {users.map((user) => (
-                        <ListItem key={user.u_id}>
-                            <ListItemIcon>
-                                <Avatar alt={user.username} src={user.profilePicture} />
-                            </ListItemIcon>
-                            <ListItemText sx={{marginRight:5}} primary={user.username} />
-                            <IconButton color="primary" onClick={()=>{addFriend(user.username)}}>
-                                <ChatIcon />
-                            </IconButton>
-                        </ListItem>
-                        ))}
-                </List>
-            </Popover>
-        </div>
-    );
+            <List sx={{ 
+            padding: 2, 
+            borderRadius: 2, 
+            height: '50vh',
+            width:'60wh', 
+            overflow: 'auto' 
+            }}>
+  {users.map((user) => (
+  <ListItem 
+    key={user.u_id} 
+    button 
+    sx={{ 
+      margin: 1, 
+      marginBottom:1, 
+      borderRadius: 2, 
+      boxShadow: 1, 
+      width: '20vh',
+      '&:hover': {
+        boxShadow: '0 0 10px rgba(0,0,0,0.5)',
+      },
+    }}
+  >
+    <ListItemIcon>
+      <StyledAvatar alt={user.username} src={"http://localhost:4003/uploads" + user.image_url} />
+    </ListItemIcon>
+    <ListItemText primary={user.username} />
+    <StyledIconButton onClick={() => { addFriend(user.username) }}>
+      <ChatIcon />
+    </StyledIconButton>
+  </ListItem>
+))}
+</List>
+</Popover>
+        </Box>
+      );
 }

@@ -11,6 +11,7 @@ const {Server} = require("socket.io");
 const server = require("http").createServer(app);
 const addFriend = require('./Controller/Socketio/addFriend');
 const initializeUser = require('./Controller/Socketio/initlizeUser');
+const path = require('path')
 const io = new Server(server,{
     cors:corsConfig
 })
@@ -19,7 +20,13 @@ const PORT = process.env.PORT;
 app.use(cors(corsConfig))
 app.use(bodyParser.json())
 
+
+const userSockets = {}; 
+
+
 app.use('/users',users);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 io.use((socket, next) => {
     if (socket.handshake.auth && socket.handshake.auth.token){
@@ -41,9 +48,35 @@ io.use((socket, next) => {
 
 io.on('connect', socket => {
     initializeUser(socket)
-    console.log("connected", socket.decoded.id); // Access userId from decoded object
-    
+    console.log("connected", socket.decoded.id); 
+    userSockets[socket.decoded.id] = socket.id;
+
     socket.on('add_friend', (name, cb) => addFriend(name, cb, socket ))
+    socket.on('private_dm', (data, cb) => {
+        console.log("userSockets: ", userSockets);
+        let parsedData;
+        try {
+            parsedData = JSON.parse(data);
+        } catch (error) {
+            console.error("Error parsing data:", error);
+            return;
+        }
+        const { recipientUserId, message } = parsedData;
+        const recipientSocketId = userSockets[recipientUserId];
+        if (recipientSocketId) {
+            io.to(recipientSocketId).emit('private_dm', { senderUserId: socket.decoded.id, recipientUserId, message });
+            console.log("message sent")
+            cb({done: true,sent:"Sent"});
+        } else {
+            console.log("message not sent", recipientUserId)
+            console.log("object: ",data)
+            cb({ status: 'error', error: 'Recipient not online' });
+        }
+    });
+    
+    socket.on('disconnect', () => {
+        delete userSockets[socket.decoded.id];
+    });
 });
 
 

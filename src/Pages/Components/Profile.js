@@ -9,69 +9,103 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import axios from 'axios';
-import UserContext from './UserContext';
+import { AccountContext } from './Security/AccountContext';
+import { Grid } from '@mui/material';
+import styled from 'styled-components';
+
+
+const Root = styled(Grid)(({ theme }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: '80%',
+  maxWidth: '600px',
+  backgroundColor: '#f5f5f5',
+  padding: '20px',
+  borderRadius: '8px',
+  boxShadow: '0 3px 5px 2px rgba(63, 81, 181, .3)',
+  zIndex: 10,
+}));
+
+
+const ImageContainer = styled(Grid)({
+  width: '10vw',
+  height: '22vh',
+  borderRadius: '70%',
+  backgroundColor: '#ddd',
+  marginBottom: '20px',
+  overflow: 'hidden',
+});
+
+const ImageInput = styled('input')({
+  display: 'none',
+});
+
+const SaveButton = styled(Button)({
+  marginTop: '20px',
+  backgroundColor: '#3f51b5',
+  color: 'white',
+  boxShadow: '0 3px 5px 2px rgba(63, 81, 181, .3)',
+  '&:hover': {
+    backgroundColor: '#303f9f',
+  },
+  padding: '10px 20px',
+  fontSize: '1.2em',
+  transition: 'all 0.3s ease',
+});
 
 function ProfileComponent({ onClose }) {
-  const userId = useContext(UserContext); // Accessing email from UserContext
+  const {currentUser,setCurrentUser} = useContext(AccountContext); 
   const [showPassword, setShowPassword] = useState(false);
-  const [userData, setUserData] = useState({
-    username: '',
-    email: '',
-    password: '',
-    image: null,
-    sub:'',
-    role:''
-  });
-
-  useEffect(() => {
-   
-    getUserByEmail()
-  }, []);
-
-  const getUserByEmail = async (email) => {
-    try {
-      const response = await axios.get(`http://localhost:4003/users/getUserByEmail/${userId.email}`);
-      const { username, email, password,role,sub } = response.data;
-      console.log("res",response)
-      setUserData({ username, email, password, role,sub });
-    } catch (error) {
-      console.error('Error fetching user data:', error);
-    }
-  };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevUserData) => ({ ...prevUserData, [name]: value }));
+    setCurrentUser((prevUserData) => ({ ...prevUserData, [name]: value }));
   };
 
   const handleImageChange = (e) => {
     const imageFile = e.target.files[0];
-    setUserData((prevUserData) => ({ ...prevUserData, image: imageFile }));
+    setCurrentUser((prevUserData) => ({ ...prevUserData, image: imageFile }));
+    uploadImage(imageFile);
+  };
+
+  const uploadImage = async (imageFile) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', imageFile);
+      const response = await axios.post(`/users/upload/${currentUser.email}`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      console.log('Image uploaded successfully:', response.data);
+      setCurrentUser((prevUserData) => ({ ...prevUserData, image_url: response.data.image_url }));
+      console.log("after upload" ,currentUser.image_url)
+      console.log(currentUser)
+    } catch (error) {
+      console.error('Error uploading image:', error);
+    }
   };
 
   const handleSave = async () => {
     try {
-      const formData = new FormData();
-      formData.append('username', userData.username);
-      formData.append('email', userData.email);
-      formData.append('password', userData.password);
-      formData.append('image', userData.image);
-  //http://localhost:4000/users/updateUser/aimannn@gmail.com
-  const body={
-    username:userData.username,
-    email:userData.email,
-    password:userData.password,
-    role:userData.role,
-    sub:userData.sub,
-
-  }
-  console.log("body",body)
-      const response = await axios.put(`http://localhost:4003/users/updateUser/${userId.email}`,body );
-  
+      const body = {
+        username: currentUser.username,
+        email: currentUser.email,
+        role: currentUser.role,
+        sub: currentUser.sub,
+        image_url: currentUser.image_url,
+      };
+      if (currentUser.newPassword) {
+        body.password = currentUser.newPassword;
+      }
+      console.log("body", body);
+      const response = await axios.put(`http://localhost:4003/users/updateUser/${currentUser.email}`, body);
       console.log('User updated successfully');
     } catch (error) {
       console.error('Error updating user:', error);
@@ -79,67 +113,65 @@ function ProfileComponent({ onClose }) {
   };
   
   return (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: 'calc(50% - 300px)',
-        bottom: 'calc(50% - 300px)',
-        right: '20px',
-        width: 'calc(100% - 40px)',
-        maxWidth: '1400px',
-        maxHeight: '600px',
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-        zIndex:10
-      }}
-    >
+    <Root container>
       <IconButton onClick={onClose} sx={{ position: 'absolute', top: '5px', right: '5px', zIndex: 1 }}>
         <CloseIcon />
       </IconButton>
-
-      <Typography variant="h6" gutterBottom>
-        Profile
-      </Typography>
-
-      <div style={{ width: '100px', height: '100px', borderRadius: '50%', backgroundColor: 'lightgray', marginBottom: '20px' }}>
-        {userData.image ? (
-          <img src={URL.createObjectURL(userData.image)} alt="Profile" style={{ width: '100%', height: '100%', borderRadius: '50%' }} />
-        ) : (
-          <Typography variant="body1" textAlign="center" style={{ lineHeight: '100px' }}>Upload Image</Typography>
-        )}
-      </div>
-
-      <input type="file" accept="image/*" onChange={handleImageChange} style={{ display: 'none' }} id="image-input" />
-      <label htmlFor="image-input">
-        <Button variant="outlined" component="span">
-          Choose Image
-        </Button>
-      </label>
-
-      <TextField name="username" label="Username" value={userData.username} onChange={handleInputChange} fullWidth margin="normal" />
-      <TextField name="email" label="Email" value={userData.email} onChange={handleInputChange} fullWidth margin="normal" />
-      <TextField
-        name="password"
-        label="Password"
-        type={showPassword ? 'text' : 'password'}
-        value={userData.password}
-        onChange={handleInputChange}
-        fullWidth
-        margin="normal"
-        InputProps={{
-          endAdornment: (
-            <IconButton onClick={togglePasswordVisibility} size="small">
-              {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
-            </IconButton>
-          ),
-        }}
-      />
-      <Button variant="contained" onClick={handleSave} sx={{ marginTop: '20px' }}>
-        Save
-      </Button>
+  
+      <Grid item xs={12}>
+        <Typography variant="h6" gutterBottom>
+          Profile
+        </Typography>
+      </Grid>
+  
+      <ImageContainer item xs={5} ml={20}>
+          {currentUser.image_url ? (
+            <img src={"http://localhost:4003/uploads"+currentUser.image_url} alt="Profile" style={{ width: '100%', height: '100%' }} />
+          ) : (
+            <Box display="flex" alignItems="center" justifyContent="center" style={{ height: '100%' }}>
+      <Typography variant="body1">Upload Image</Typography>
     </Box>
+          )}
+        </ImageContainer>
+
+        <ImageInput type="file" accept="image/*" onChange={handleImageChange} id="image-input" />
+        <Grid item xs={12} m={4} ml={28}>
+          <label htmlFor="image-input">
+            <Button variant="outlined" component="span">
+              Choose Image
+            </Button>
+          </label>
+        </Grid>
+  
+      <Grid item xs={12}>
+        <TextField name="username" label="Username" value={currentUser.username} onChange={handleInputChange} fullWidth margin="normal" />
+      </Grid>
+      <Grid item xs={12}>
+        <TextField name="email" label="Email" value={currentUser.email} onChange={handleInputChange} fullWidth margin="normal" />
+      </Grid>
+      <Grid item xs={12}>
+  <TextField
+    name="newPassword"
+    label="New Password"
+    type={showPassword ? 'text' : 'password'}
+    onChange={handleInputChange}
+    fullWidth
+    margin="normal"
+    InputProps={{
+      endAdornment: (
+        <IconButton onClick={togglePasswordVisibility} size="small">
+          {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
+        </IconButton>
+      ),
+    }}
+  />
+</Grid>
+      <Grid item xs={12}>
+        <SaveButton variant="contained" onClick={handleSave}>
+          Save
+        </SaveButton>
+      </Grid>
+    </Root>
   );
 }
 

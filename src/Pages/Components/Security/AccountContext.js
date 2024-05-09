@@ -6,9 +6,26 @@ const UserContextProvider = ({ children }) => {
         loggedIn: null,
         token: localStorage.getItem('token'),
     });
+    const [friends,setFriends] = useState([]);
+    const [orgUsers,setOrgUsers] = useState([]);
+    // const [messages,setMessages] = useState([]);
+    const [currentUser,setCurrentUser] = useState({
+        email:'',
+        id:'',
+        username:'',
+        image_url:'',
+        password: '',
+        sub:'',
+        role:'',
+        user_id:''
+      });
+    const [selectedOrgId,setSelectedOrgId] = useState('');
     
     return (
-        <AccountContext.Provider value={ {user,setUser} }>
+        <AccountContext.Provider value={{
+            user,setUser,friends,setFriends,orgUsers,setOrgUsers,currentUser,setCurrentUser
+        ,selectedOrgId,setSelectedOrgId
+        }}>
             {children}
         </AccountContext.Provider>
     );

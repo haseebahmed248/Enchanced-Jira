@@ -1,17 +1,17 @@
 import * as React from 'react';
 import { useEffect, useState } from 'react';
 import OrgCard from './Components/OrgCard';
-import { styled } from '@mui/material/styles';
 import NestedList from './Components/NestedList';
+import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import Jira from '../Assets/Logo/Jira.png'
-import './CSS/Organizations.css'
 import Box from '@mui/material/Box';
+import Jira from '../Assets/Logo/Jira.png';
+import './CSS/Organizations.css';
 
 const ORG_URI = "http://localhost:4001/organization/all";
 
@@ -21,53 +21,62 @@ export default function Organizations() {
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
-    padding: theme.spacing(1),
+    padding: theme.spacing(2),
     textAlign: 'center',
     color: theme.palette.text.secondary,
-    borderRadius:'8px'
+    borderRadius: '12px',
   }));
 
   useEffect(() => {
     fetch(ORG_URI)
-    .then(response => response.json())
-    .then(data => setOrganizations(data))
-    .catch(error => console.error(error));
+      .then((response) => response.json())
+      .then((data) => setOrganizations(data))
+      .catch((error) => console.error(error));
   }, []);
-  
+
   return (
-    <div className='orgContainer'>
-      <Box sx={{  }}>
-        <AppBar position="static" style={{ backgroundColor: '#3D52A0', position:'absolute',width: '20%', borderTopRightRadius: '50px', borderBottomRightRadius: '50px', overflow: 'hidden' }}>
-          <Toolbar elevation={0}>
-            <IconButton edge="start" color="inherit" aria-label="logo">
-              <img src={Jira} alt="logo" /> 
-            </IconButton>
-            <Typography variant="h6" style={{ flexGrow: 1, fontSize: '30px', color: 'white', marginTop:'10px' }}> {/* Adjusted fontSize and color */}
-              Enhanced Jira
-            </Typography>
-          </Toolbar>
-        </AppBar>
-      </Box>
-      <Item sx={{ height:'100%',backgroundColor:'#E2F0F9' }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} style={{marginLeft:'6%', marginTop:'25px'}}>
-            <h2 style={{fontSize:'30px'}}> Avaliable Organizations</h2>
-          </Grid>
-          <Grid item xs={8}>
-            <OrgCard organizations={organizations}/>
-          </Grid>
-          <Grid item xs={4}>
-            <Grid container justifyContent="flex-end"> {/* New Grid container */}
-              <Item sx={{
-                width: '75%',
-                marginRight: '0',
-              }}>
+    <div className="orgContainer">
+      <AppBar
+        position="static"
+        style={{
+          backgroundColor: '#3D52A0',
+          borderTopRightRadius: '50px',
+          borderBottomRightRadius: '50px',
+          overflow: 'hidden',
+        }}
+      >
+        <Toolbar>
+          <IconButton edge="start" color="inherit" aria-label="logo">
+            <img src={Jira} alt="logo" style={{ height: '40px' }} />
+          </IconButton>
+          <Typography variant="h6" style={{ flexGrow: 1, fontSize: '30px', color: 'white' }}>
+            Enhanced Jira
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      <Box sx={{ p: 3, height: '100%' }}>
+        <Grid container spacing={3}> 
+          <Grid item xs={12} md={4}> 
+            <Item sx={{ minHeight: '300px', padding: '16px' }}>
+              <div style={{ overflowY: 'auto', height: '300px', paddingLeft: '16px', paddingRight: '16px' }}>
+                <Typography variant="h5" gutterBottom>
+                  Organization Structure
+                </Typography>
                 <NestedList />
-              </Item>
-            </Grid>
+              </div>
+            </Item>
+          </Grid>
+          <Grid item xs={12} md={8}>
+            <Item sx={{ minHeight: '300px',height:'85vh', padding: '16px' }}>
+              <Typography variant="h4" gutterBottom mt={5}>
+                Available Organizations
+              </Typography>
+              <OrgCard organizations={organizations} />
+            </Item>
           </Grid>
         </Grid>
-      </Item>
-    </div>
-  );
+      </Box>
+    </div>
+  );
 }

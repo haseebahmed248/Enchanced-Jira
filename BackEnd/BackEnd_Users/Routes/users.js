@@ -8,9 +8,49 @@ const jwt = require('jsonwebtoken');
 const dotenv= require('dotenv');
 const jwtSign = require('../Jwt/jwtauth');
 dotenv.config();
+const multer = require('multer')
+const path = require('path')
+const { sendLoginEmail } = require('../Controller/emailController');
+
 
 // Add middleware to parse JSON bodies
 router.use(express.json());
+
+const storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './uploads');
+    },
+    filename: function(req, file, cb) {
+        console.log(file);
+        const ext = file.mimetype.split('/')[1];
+        cb(null,`/${file.originalname}-${Date.now()}.${ext}`);
+    }
+})
+const upload = multer({
+    storage: storage,
+})
+router.use('/uploads', express.static('uploads'));
+
+router.post("/upload/:email", upload.single('file'), async (req, res) => {
+    try{
+        const image = req.file.filename;
+        const userEmail = req.params.email;
+        const query = {
+            text: "UPDATE users SET image_url = $1 WHERE email = $2",
+            values: [image, userEmail]
+        };
+        const result = await pool.query(query);
+        
+        if (result.rowCount > 0) {
+            res.status(200).json({message: "Image uploaded and user updated successfully"});
+        } else {
+            res.status(404).json({message: "User not found or update failed"});
+        }
+    }catch(err){
+        console.log(err);
+        res.status(500).json({message:"Error uploading image"});
+    }
+});
 
 router.get('/getsession',(req,res)=>{
     res.send(req.session.user);
@@ -46,16 +86,17 @@ router.get('/getUserByEmail/:email', async (req, res) => {
 
 router.put('/updateUser/:email', async (req, res) => {
     const userEmail = req.params.email; // Retrieve user email from request parameters
-    const { username, email, password, role, sub } = req.body;
+    const { username, email, password, role, sub, image_url } = req.body;
 
     try {
+        const hashedPassword = await bcrypt.hash(password, 10);
         const updateUser = await pool.query(
-            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5 WHERE email = $6",
-            [username, email, password, role, sub, userEmail]
+            "UPDATE Users SET username = $1, email = $2, password = $3, role = $4, sub = $5, image_url = $6 WHERE email = $7",
+            [username, email, hashedPassword, role, sub, image_url, userEmail]
         );
-
+        
         if (updateUser.rowCount > 0) {
-            res.status(200).send("User updated successfully");
+            res.status(200).json({message:"User updated successfully",data:updateUser.rows[0]});
         } else {
             res.status(404).send("User not found or update failed");
         }
@@ -226,7 +267,7 @@ router.post("/insertUser", async (req, res) => {
             id: getUser.user_id
         },process.env.SECRET,{expiresIn:'1min'})
         .then(token=>{
-            res.json({loggedIn:true,token})
+            res.json({loggedIn:true,token}).status(200)
         })
         .catch(err=>{
             console.log(err);
@@ -244,47 +285,46 @@ router.post("/insertUser", async (req, res) => {
 
 router.post('/insertUserSub', async (req, res) => {
     const { username, email, role, sub } = req.body;
+    const user_id = uuidv4();
     try {
-        // Check if the "sub" value already exists in the database
+        
         const existingUser = await pool.query("SELECT * FROM Users WHERE sub = $1", [sub]);
         if (existingUser.rows.length > 0) {
-            // Return an error response if the "sub" value already exists
+            
             return res.status(400).send("Error: sub value already exists.");
         }
-
-        // If "sub" value is unique, insert the new user
-        const insertUser = await pool.query("INSERT INTO Users(username, email, role, sub) VALUES ($1, $2, $3, $4)", [username, email, role, sub]);
-        if (insertUser.rowCount > 0) {
-            res.status(200).send("User created successfully.");
-        } else {
-            res.status(500).send("Error creating new user.");
-        }
+        await pool.query("INSERT INTO Users(username, email, role, sub,user_id) VALUES ($1, $2, $3, $4,$5)", [username, email, role, sub,user_id]);
+        await sendLoginEmail(getUser.rows[0].email);
+        jwtSign({
+            email: email,
+            username: username,
+            role: role,
+            id: user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token,email:email}).status(200)
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
         console.error("Error creating new user:", error);
         res.status(500).send("Error creating new user.");
     }
 });
 
-router.post('/logout/:email', (req, res) => {
-    // try {
-        const userEmail = req.params.email.toLowerCase().trim(); // Convert to lowercase and trim whitespace
-        
-        // Log the session to check if it exists
-        console.log("Session before destruction:", req.session);
-
-        // Check if the user is logged in with the provided email
-    //     if (req.session.user && req.session.user.email === userEmail) {
-    //         req.session.destroy(); // Destroy the session
-    //         return res.status(200).send("Logged out successfully");
-    //     } else {
-    //         // If the user is not logged in with the provided email, send an error response
-    //         return res.status(400).send("Invalid email or user not logged in");
-    //     }
-    // } catch (error) {
-    //     console.error("Error logging out:", error);
-    //     res.status(500).send("Error logging out");
-    // }
-});
+router.post('/logout/:email', async (req, res) => {
+    try {
+        const userEmail = req.params.email;
+            const expiredToken = await jwtSign({}, process.env.SECRET, { expiresIn: 0 });
+            res.status(200).send({ token: expiredToken, message: "Logged out successfully" });
+       
+    } catch (error) {
+        console.error("Error logging out:", error);
+        res.status(500).json("Error logging out");
+    }
+})
 
 
 
@@ -306,6 +346,8 @@ router
         if (!validPassword) {
             return res.status(401).send("Invalid email or password");
         }
+        await sendLoginEmail(getUser.rows[0].email);
+        
         jwtSign({
             email: getUser.rows[0].email,
             username: getUser.rows[0].username,
@@ -338,31 +380,58 @@ router.post('/checkLoginSub', async (req, res) => {
         if (getUser.rows.length === 0) {
             return res.status(401).send("Invalid sub value");
         }
-
-       
-        const user = getUser.rows[0];
-
-       
-        // req.session.user = {
-        //     id: user.id,
-        //     username: user.username,
-        //     email: user.email,
-        //     role: user.role,
-        //     sub: user.sub
-        // };
-
-     
-        res.status(200).send({
-            message: "Logged in successfully",
-            data:user.email
-        });
+        await sendLoginEmail(getUser.rows[0].email);
+        jwtSign({
+            email: getUser.rows[0].email,
+            username: getUser.rows[0].username,
+            role: getUser.rows[0].role,
+            id:getUser.rows[0].user_id
+        },process.env.SECRET,{expiresIn:'1min'})
+        .then(token=>{
+            res.json({loggedIn:true,token,data:getUser.rows})
+        })
+        .catch(err=>{
+            console.log(err);
+            res.json({loggedIn:false,status:"try Again later"})
+        })
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).send("Error during login");
     }
 });
-
-
-
+ 
+router.get('/getUsersEmail', async (req, res) => {
+    try {
+        const data = await pool.query("SELECT email FROM Users WHERE role != 'admin'");
+        res.json(data.rows.map(user => user.email)).status(200); // Return only the email addresses
+    } catch (e) {
+        res.json(e).status(500);
+    }
+});
+ 
+ router.get('/getImage/:id',async(req,res)=>{
+    try{
+        const image_url = await pool.query("SELECt image_url FROM users WHERE u_id = $1",[req.params.id]);
+        if(image_url.rows.length === 0){
+            return res.status(404).send("No image found");
+        }
+        res.status(200).json(image_url);
+    }catch(e){
+        res.json(e).status(500);
+    }
+ })
+ 
+router.get('/userProfile/:id',async(req,res)=>{
+    try{
+        const image_url = await pool.query("SELECT image_url FROM users WHERE user_id = $1",[req.params.id]);
+        if(image_url.rows.length === 0){
+            return res.status(404).send("No image found");
+        }
+        res.status(200).json(image_url);
+    }catch(e){
+        res.json(e).status(500);
+    }
+}) 
+ 
  
  module.exports = router;
