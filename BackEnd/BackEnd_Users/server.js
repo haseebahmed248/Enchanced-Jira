@@ -11,7 +11,8 @@ const {Server} = require("socket.io");
 const server = require("http").createServer(app);
 const addFriend = require('./Controller/Socketio/addFriend');
 const initializeUser = require('./Controller/Socketio/initlizeUser');
-const path = require('path')
+const path = require('path');
+const onDisconnect = require('./Controller/Socketio/onDisconnect');
 const io = new Server(server,{
     cors:corsConfig
 })
@@ -73,9 +74,11 @@ io.on('connect', socket => {
             cb({ status: 'error', error: 'Recipient not online' });
         }
     });
+
     
     socket.on('disconnect', () => {
         delete userSockets[socket.decoded.id];
+        onDisconnect(socket)
     });
 });
 

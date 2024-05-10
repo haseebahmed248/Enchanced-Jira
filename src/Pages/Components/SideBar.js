@@ -126,6 +126,7 @@ useEffect(() => {
               key={friend.userid} 
               username={friend.username} 
               image={"http://localhost:4003/uploads"+friendImageUrls[friend.userid]}
+              connected={friend.connected}
               onClick={() => openMessagePanel(friend.username, friend.userid,friendImageUrls[friend.userid])} 
             />
           ))}
