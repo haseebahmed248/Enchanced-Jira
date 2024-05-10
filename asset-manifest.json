@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Enhanced-Jira/static/css/main.62e2d433.css",
+    "main.js": "/Enhanced-Jira/static/js/main.62b92fe0.js",
+    "index.html": "/Enhanced-Jira/index.html",
+    "main.62e2d433.css.map": "/Enhanced-Jira/static/css/main.62e2d433.css.map",
+    "main.62b92fe0.js.map": "/Enhanced-Jira/static/js/main.62b92fe0.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.62e2d433.css",
+    "static/js/main.62b92fe0.js"
+  ]
+}
