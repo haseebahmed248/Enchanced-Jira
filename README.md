@@ -24,10 +24,14 @@ Ready to revolutionize your project management experience with Enhanced-Jira? Fo
 - `git clone https://github.com/haseebahmed248/Enchanced-Jira.git`
 - `cd Enhanced-Jira`
 - `npm i`
+- `npm start`
 - Open 3 more terminals for BackEnd
 - `cd BackEnd/BackEnd-Admin`
+- `npm run dev`
 - `cd BackEnd/BackEnd-Organization`
+- `npm run dev`
 - `cd BackEnd/BackEnd-Users`
+- `npm run dev`
 - In each BackEnd terminal use `npm i`
 - **Must Use Linux because the project contains Redis**
 
