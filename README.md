@@ -19,6 +19,18 @@ Enhanced-Jira's live chat feature transforms the way teams communicate within th
 
 Ready to revolutionize your project management experience with Enhanced-Jira? Follow these steps to integrate live chat communication into your Jira instance:
 
+## Installation
+
+- `git clone https://github.com/haseebahmed248/Enchanced-Jira.git`
+- `cd Enhanced-Jira`
+- `npm i`
+- Open 3 more terminals for BackEnd
+- `cd BackEnd/BackEnd-Admin`
+- `cd BackEnd/BackEnd-Organization`
+- `cd BackEnd/BackEnd-Users`
+- In each BackEnd terminal use `npm i`
+- **Must Use Linux because the project contains Redis**
+
 
 ## Support
 
